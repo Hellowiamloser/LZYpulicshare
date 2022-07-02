@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter;
  * @version 1.0.0
  * @project spring-boot-pro
  * @datetime 2022-07-01 16:37
- * @description: TODO
+ * @description: 统一管理日期类型转换
  */
 @Configuration
 @EnableConfigurationProperties({JacksonProperties.class})

@@ -9,7 +9,7 @@ import java.lang.annotation.*;
  * @version 1.0.0
  * @project springboot-development-platform
  * @datetime 2022-04-13 11:37
- * @description: [自定义校验规则实现]
+ * @description: 自定义校验规则实现
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

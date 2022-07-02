@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
  * @version 1.0.0
  * @project spring-boot-pro
  * @datetime 2022-07-02 15:05
- * @description: TODO
+ * @description: 获取servlet实例
  */
 public class ServletUtils {
 

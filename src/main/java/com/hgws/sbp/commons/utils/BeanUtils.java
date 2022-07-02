@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * @version 1.0.0
  * @project spring-boot-pro
  * @datetime 2022-07-02 15:21
- * @description: TODO
+ * @description: 获取ioc容器实例
  */
 @Component
 public class BeanUtils implements BeanFactoryPostProcessor {

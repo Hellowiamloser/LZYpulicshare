@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * @version 1.0.0
  * @project spring-boot-pro
  * @datetime 2022-06-30 17:27
- * @description: TODO
+ * @description: 日志注解
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
  * @version 1.0.0
  * @project springboot-development-platform
  * @datetime 2022-07-02 15:10
- * @description: TODO
+ * @description: 公共表现层实例
  */
 public class BaseController {
     /**

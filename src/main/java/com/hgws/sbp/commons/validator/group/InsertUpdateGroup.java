@@ -7,7 +7,7 @@ import javax.validation.GroupSequence;
  * @version 1.0.0
  * @project springboot-development-platform
  * @datetime 2022-04-13 12:50
- * @description: [校验规则分组·排序执行]
+ * @description: 校验规则分组·排序执行
  */
 @GroupSequence({Insert.class, Update.class})
 public interface InsertUpdateGroup {

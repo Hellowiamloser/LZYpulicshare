@@ -16,7 +16,7 @@ import java.io.PrintWriter;
  * @version 1.0.0
  * @project spring-boot-pro
  * @datetime 2022-07-02 11:12
- * @description: TODO
+ * @description: 自定义返回JSON响应
  */
 public class ResponseResult {
     /**

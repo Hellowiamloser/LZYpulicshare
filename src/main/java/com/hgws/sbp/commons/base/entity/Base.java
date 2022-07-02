@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * @version 1.0.0
  * @project spring-boot-pro
  * @datetime 2022-06-29 17:29
- * @description: TODO
+ * @description: 公共基础属性
  */
 @Getter
 @Setter
