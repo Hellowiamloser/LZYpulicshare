@@ -1,0 +1,21 @@
+spring:
+    datasource:
+        #数据库连接四要素
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://127.0.0.1:3306/javakc?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+        #账号加密
+        username: mpw:VfkKTxRK9v0IQMEzJ1hgBQ==
+        #密码加密
+        password: mpw:voUKzONmh20zDhwYFI47Mg==
+        #druid数据源配置
+        type: com.alibaba.druid.pool.DruidDataSource
+        #druid连接池属性
+        #数据库池连接数量一直保持一个不少于最小连接数的数量，当数量不够时，数据库会创建一些连接，直到一个最大连接数，之后连接数据库就会等待。
+        druid:
+            #最小连接数是连接池一直保持的数据连接。如果应用程序对数据库连接的使用量不大，将会有大量的数据库连接资源被浪费掉。
+            #计算公式: 连接数 = ((CPU核数 * 2) + 有效磁盘数)
+            min-idle: 10
+            #最大连接数是连接池能申请的最大连接数。如果数据连接请求超过此数，后面的数据连接请求将被加入到等待队列中，这会影响之后的数据库操作。
+            max-active: 50
+            #在连接池初始创建成功后向连接池写入的数量
+            initial-size: 10

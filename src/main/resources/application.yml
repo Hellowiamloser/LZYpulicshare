@@ -1,0 +1,42 @@
+spring:
+    #指定当前运行环境
+    profiles:
+        active: dev
+    #应用名称
+    application:
+        name: spring-boot-pro
+    #springmvc配置
+    mvc:
+        pathmatch:
+            #解决swagger3启动异常
+            matching-strategy: ant_path_matcher
+    #jackson配置
+    jackson:
+        #时区
+        time-zone: GMT+8
+        #日期格式
+        date-format: yyyy-MM-dd
+        #忽略为null属性
+        default-property-inclusion: non_null
+mybatis-plus:
+    #扫描映射文件
+    mapper-locations: classpath:/mapper/*/*.xml
+    #扫描别名实体类
+    type-aliases-package: com.hgws.sbp.modules.*.*.entity
+    #实体类继承基础类
+    type-aliases-super-type: com.hgws.sbp.commons.base.entity.Base
+    #配置信息
+    configuration:
+        #启用驼峰命名
+        map-underscore-to-camel-case: true
+    #全局配置
+    global-config:
+        #数据库设置
+        db-config:
+            #逻辑删除后值
+            logic-delete-value: 1
+            #逻辑删除前值
+            logic-not-delete-value: 0
+            #逻辑删除字段
+            logic-delete-field: delete_flag
+        banner: false
