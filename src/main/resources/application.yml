@@ -40,3 +40,17 @@ mybatis-plus:
             #逻辑删除字段
             logic-delete-field: delete_flag
         banner: false
+security:
+    #白名单
+    white-list:
+        - /druid/**
+        - /swagger-ui/**
+        - /swagger-resources/**
+        - /v3/api-docs/**
+    jwt:
+        header: Authorization
+        prefix: "Bearer "
+        secret: secret
+        issuer: "http://127.0.0.1/"
+        expiration: 3600
+        remember: 604800

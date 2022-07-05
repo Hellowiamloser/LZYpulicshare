@@ -1,6 +1,7 @@
 package com.hgws.sbp.commons.base.controller;
 
 import com.hgws.sbp.commons.enumerate.ResultEnumerate;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
@@ -22,6 +23,7 @@ import java.util.Map;
  * @datetime 2022-07-02 11:39
  * @description: 404接口不存在
  */
+@Api(tags = "404异常")
 @RestController
 @RequestMapping("${server.error.path:${error.path:/error}}")
 public class BaseErrorController extends BasicErrorController {

@@ -1,4 +1,4 @@
-package com.hgws.sbp.components.datasource;
+package com.hgws.sbp.components.properties;
 
 import lombok.Getter;
 import lombok.Setter;

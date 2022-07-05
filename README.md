@@ -1,7 +1,7 @@
 # spring-boot-pro
 
 #### 介绍
-​	spring boot前后端分离开发平台, 平台采用spring-boot作为平台搭建基础架构, 数据层采用mybatis-plus,数据源使用阿里巴巴druid, 认证采用spring-security.
+​	spring boot pro为前后端分离开发平台, 平台采用spring-boot作为平台搭建基础架构, 数据层采用mybatis-plus,数据源使用阿里巴巴druid, 认证采用spring-security.
 
 #### 软件架构
 ​	前后端分离已经成为互联网项目开发标准，它会为以后的大型分布式架构打下基础。SpringBoot使编码配置部署都变得简单，越来越多的互联网公司已经选择SpringBoot作为微服务的入门级微框架。
@@ -12,7 +12,12 @@
 1.  导入spring-boot-pro项目后首先下载相关依赖
 1.  导入项目db目录中SQL到数据库(schema.sql -> data.sql)
 2.  修改resources/application-dev.yml中数据库连接信息
-3.  启动服务器后使用postman完成测试
+4.  启动服务器后使用postman完成测试
+    1.  首先调用登陆接口获取token
+        1.  账号admin 密码123456	->	system_user表
+
+    2.  把token写入到Authorization中
+
 
 #### 使用说明
 

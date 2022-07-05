@@ -107,4 +107,16 @@ public class UserService extends BaseService<UserDao, User> {
         return dao.selectPage(userPage, queryWrapper);
     }
 
+    /**
+     * 根据登录账号查询用户属性
+     * @param username 登陆账号
+     * @return 用户属性
+     */
+    public User loadUserByUsername(String username)
+    {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("name", username);
+        return dao.selectOne(wrapper);
+    }
+
 }
