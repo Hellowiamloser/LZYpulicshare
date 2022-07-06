@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -96,6 +97,16 @@ public class ResponseResultAdvice implements ResponseBodyAdvice<Object> {
             return Result.failure(ResultEnumerate.PARAM_IS_INVALID, methodArgumentNotValidException((MethodArgumentNotValidException)exception));
         //公共的错误
         return Result.failure(ResultEnumerate.INTERFACE_INNER_ERROR, exception.getMessage());
+    }
+
+    /**
+     * 用户未授权异常不处理
+     * @param exception AccessDeniedException
+     * @throws AccessDeniedException AccessDeniedException
+     */
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public void accessDeniedException(AccessDeniedException exception) throws AccessDeniedException {
+        throw exception;
     }
 
     /**

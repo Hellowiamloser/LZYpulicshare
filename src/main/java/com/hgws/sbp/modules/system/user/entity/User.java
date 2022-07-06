@@ -2,6 +2,7 @@ package com.hgws.sbp.modules.system.user.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.hgws.sbp.commons.base.entity.Base;
+import com.hgws.sbp.commons.validator.password.Password;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -26,13 +27,13 @@ import java.time.LocalDate;
 public class User extends Base {
 
     @NotBlank(message = "账号不允许为空")
-    @Length(min = 2, max = 15, message = "账号长度要求在{min}-{max}之间")
+    @Length(min = 3, max = 16, message = "账号长度要求在{min}-{max}之间")
     @ApiModelProperty(name = "name", value = "登陆账号", required = true, dataType = "String")
     private String name;
 
     @NotBlank(message = "密码不允许为空")
     @Length(min = 6, max = 16, message = "登陆密码长度要求在{min}-{max}之间")
-    //@Password(message = "登陆密码强度太低风险太高")
+    @Password(message = "登陆密码强度太低风险太高")
     private String pass;
 
     @NotNull(message = "性别不允许为空")
@@ -53,8 +54,9 @@ public class User extends Base {
     @ApiModelProperty(name = "phone", value = "手机号码", required = true, dataType = "String")
     private String phone;
 
+    @NotBlank(message = "电子邮箱不允许为空")
     @Email(message = "电子邮箱必须符合规范")
-    @Length(min = 6, max = 35, message = "电子邮箱长度要求在{min}-{max}之间")
+    @Length(min = 6, max = 30, message = "电子邮箱长度要求在{min}-{max}之间")
     @ApiModelProperty(name = "email", value = "电子邮箱", required = true, dataType = "String")
     private String email;
 

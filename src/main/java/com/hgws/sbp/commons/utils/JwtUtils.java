@@ -1,10 +1,7 @@
 package com.hgws.sbp.commons.utils;
 
 import com.hgws.sbp.components.properties.SpringSecurityProperties;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,21 +29,16 @@ public class JwtUtils {
      * @param username 账号
      * @return 认证token
      */
-    public String createToken(String username) {
-        Claims claims = Jwts.claims();
+    public String createToken(int id, String username) {
         return Jwts.builder()
-            //签发标识
-            .setIssuer(properties.getJwt().getIssuer())
-            //权限集合
-            .setClaims(claims)
-            //签发账号
-            .setSubject(username)
-            //设置签发时间
-            .setIssuedAt(new Date())
-            //设置签名秘钥
-            .signWith(SignatureAlgorithm.HS512, properties.getJwt().getSecret())
-            //设置签发过期时间
-            .setExpiration(new Date(System.currentTimeMillis() + properties.getJwt().getExpiration() * 1000))
+            .claim("id", id)
+            .claim("username", username)//用户基础信息
+            .setIssuer(properties.getJwt().getIssuer())//签发标识
+            .setSubject(username)//签发账号
+            .signWith(SignatureAlgorithm.HS512, properties.getJwt().getSecret()) //设置签名秘钥
+            .setIssuedAt(new Date())//设置签发时间
+            .setExpiration(new Date(System.currentTimeMillis() + properties.getJwt().getExpiration() * 1000))//设置签发过期时间
+            .compressWith(CompressionCodecs.DEFLATE)//对于荷载内容压缩
             .compact();
     }
 

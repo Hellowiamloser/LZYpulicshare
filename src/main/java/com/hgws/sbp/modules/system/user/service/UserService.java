@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hgws.sbp.commons.base.service.BaseService;
 import com.hgws.sbp.modules.system.user.dao.UserDao;
 import com.hgws.sbp.modules.system.user.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -20,6 +22,9 @@ import org.springframework.util.StringUtils;
 @Service
 public class UserService extends BaseService<UserDao, User> {
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     /**
      * 添加人员
      * @param entity 人员属性
@@ -28,6 +33,7 @@ public class UserService extends BaseService<UserDao, User> {
     @Transactional
     public int insert(User entity)
     {
+        entity.setPass(passwordEncoder.encode(entity.getPass()));
         return dao.insert(entity);
     }
 

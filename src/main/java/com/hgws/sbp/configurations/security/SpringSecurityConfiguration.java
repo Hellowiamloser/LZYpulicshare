@@ -11,6 +11,7 @@ import com.hgws.sbp.modules.system.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
@@ -29,7 +30,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -43,7 +43,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhouhonggang
@@ -58,30 +61,22 @@ import java.util.*;
 public class SpringSecurityConfiguration {
 
     @Autowired
+    private JwtUtils jwtUtils;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
-    private JwtUtils jwtUtils;
+    public PasswordEncoder passwordEncoder;
 
     @Autowired
     private SpringSecurityProperties springSecurityProperties;
 
     private final static String USER_NOT_FOUND = "账号不存在";
     private final static String USER_WAS_LOCKED = "账号已锁定";
-
-    /**
-     * 密码解析器: 单向密码解析器
-     * 通过salt加盐保证每次生成密码不一样
-     * @return BCryptPasswordEncoder
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder()
-    {
-        return new BCryptPasswordEncoder();
-    }
 
     /**
      * UserDetailsService身份认证
@@ -115,13 +110,18 @@ public class SpringSecurityConfiguration {
         };
     }
 
+    /**
+     * DaoAuthenticationProvider身份认证
+     * @return DaoAuthenticationProvider
+     * @throws Exception Exception
+     */
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() throws Exception {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         //显示用户不存在异常
         provider.setHideUserNotFoundExceptions(false);
         //注入密码解析器
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setPasswordEncoder(passwordEncoder);
         //注入查找用户
         provider.setUserDetailsService(userDetailsService());
         //完成前置校验
@@ -162,13 +162,13 @@ public class SpringSecurityConfiguration {
                     // 用户未登录
                     ResultEnumerate enumerate = ResultEnumerate.LOGIN_NOT_LOGGED;
                     // 返回响应到客户端
-                    ResponseResult.result(Result.failure(enumerate));
+                    ResponseResult.result(Result.failure(enumerate), HttpStatus.FORBIDDEN.value());
                 })
                 .accessDeniedHandler((request, response, exception) -> {
                     // 用户未授权
                     ResultEnumerate enumerate = ResultEnumerate.UNAUTHORIZED_ACCESS;
                     // 返回响应到客户端
-                    ResponseResult.result(Result.failure(enumerate));
+                    ResponseResult.result(Result.failure(enumerate), HttpStatus.UNAUTHORIZED.value());
                 })
                 .and()
             // 登陆认证实现
@@ -236,10 +236,12 @@ public class SpringSecurityConfiguration {
                             (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
                     // 获取登陆账号
                     String username = user.getUsername();
+                    // 根据账号查询用户信息
+                    User entity = userService.loadUserByUsername(username);
                     // 生成jwt token
-                    String token = jwtUtils.createToken(username);
-                    ResultEnumerate enumerate = ResultEnumerate.LOGIN_SUCCESS;
+                    String token = jwtUtils.createToken(entity.getId(), entity.getName());
                     // 返回响应到客户端
+                    ResultEnumerate enumerate = ResultEnumerate.LOGIN_SUCCESS;
                     ResponseResult.result(Result.success(enumerate, token));
                 }
             })
@@ -265,6 +267,17 @@ public class SpringSecurityConfiguration {
                     super.doFilterInternal(request, response, chain);
                 }
             })
+            // 退出登录逻辑处理
+            .logout()
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    // 可以完善加入token到黑名单至过期时间
+                    // 清理security上下文对象
+                    SecurityContextHolder.clearContext();
+                    // 返回响应到客户端
+                    ResultEnumerate enumerate = ResultEnumerate.LOGOUT_SUCCESS;
+                    ResponseResult.result(Result.success(enumerate));
+                })
+            .and()
             .build();
     }
 

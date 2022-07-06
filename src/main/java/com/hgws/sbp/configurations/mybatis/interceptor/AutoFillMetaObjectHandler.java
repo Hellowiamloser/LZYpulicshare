@@ -1,7 +1,9 @@
 package com.hgws.sbp.configurations.mybatis.interceptor;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.hgws.sbp.commons.utils.UserUtils;
 import org.apache.ibatis.reflection.MetaObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -16,13 +18,16 @@ import java.time.LocalDateTime;
 @Component
 public class AutoFillMetaObjectHandler implements MetaObjectHandler {
 
+    @Autowired
+    private UserUtils userUtils;
+
     /**
      * 添加自动填充
      * @param metaObject 添加对象
      */
     @Override
     public void insertFill(MetaObject metaObject) {
-        Integer userId = 1;
+        Integer userId = userUtils.getUserId();
         this.fillStrategy(metaObject, "revision", 1);
         this.fillStrategy(metaObject, "createdBy", userId);
         this.strictInsertFill(metaObject, "createdTime", LocalDateTime::now, LocalDateTime.class);
@@ -34,7 +39,7 @@ public class AutoFillMetaObjectHandler implements MetaObjectHandler {
      */
     @Override
     public void updateFill(MetaObject metaObject) {
-        Integer userId = 1;
+        Integer userId = userUtils.getUserId();
         this.fillStrategy(metaObject, "updatedBy", userId);
         this.strictInsertFill(metaObject, "updatedTime", LocalDateTime::now, LocalDateTime.class);
     }

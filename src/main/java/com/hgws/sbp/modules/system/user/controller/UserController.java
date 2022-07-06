@@ -86,6 +86,7 @@ public class UserController extends BaseController {
     @LoggerOperation(module = "系统-用户", message = "用户主键查询")
     @ApiOperation("ID查询用户")
     @ApiImplicitParam(name = "id", value = "用户主键ID", dataTypeClass = Integer.class)
+    //@PreAuthorize("hasAuthority('system:user:load')") 权限认证
     public User load(@PathVariable int id)
     {
         return userService.load(id);
