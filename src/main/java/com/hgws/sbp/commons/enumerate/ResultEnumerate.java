@@ -19,6 +19,7 @@ public enum ResultEnumerate {
     LOGIN_OTHER_ERROR(1008, "其他登陆失败"),
     LOGIN_NOT_LOGGED(1009, "用户未登录"),
     UNAUTHORIZED_ACCESS(1010, "用户未授权"),
+    TOKEN_ALREADY_EXPIRED(1011, "token已过期"),
 
     /* 接口相关：2001-2999 */
     INTERFACE_CALL_SUCCESS(2001, "接口调用成功"),

@@ -19,3 +19,10 @@ spring:
             max-active: 50
             #在连接池初始创建成功后向连接池写入的数量
             initial-size: 10
+security:
+    jwt:
+        secret: tjYokBop1fOXj9SttC0ZKnr
+        issuer: "https://www.xxxx.com/"
+        expiration: 1800
+        refresh: 86400
+        remember: 604800

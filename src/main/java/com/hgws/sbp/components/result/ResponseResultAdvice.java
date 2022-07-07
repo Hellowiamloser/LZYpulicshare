@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hgws.sbp.commons.base.result.Result;
 import com.hgws.sbp.commons.enumerate.ResultEnumerate;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class ResponseResultAdvice implements ResponseBodyAdvice<Object> {
      * @return  是否拦截
      */
     @Override
-    public boolean supports(MethodParameter methodParameter, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(MethodParameter methodParameter, @NotNull Class<? extends HttpMessageConverter<?>> converterType) {
         return (methodParameter.hasMethodAnnotation(ResponseBody.class)
                 || AnnotatedElementUtils.hasAnnotation(methodParameter.getContainingClass(), ResponseBody.class));
     }
@@ -65,7 +66,7 @@ public class ResponseResultAdvice implements ResponseBodyAdvice<Object> {
      * @return  封装结果集
      */
     @Override
-    public Object beforeBodyWrite(Object data, MethodParameter methodParameter, MediaType mediaType, Class<? extends HttpMessageConverter<?>> aClass, ServerHttpRequest request, ServerHttpResponse response) {
+    public Object beforeBodyWrite(Object data, @NotNull MethodParameter methodParameter, @NotNull MediaType mediaType, @NotNull Class<? extends HttpMessageConverter<?>> aClass, @NotNull ServerHttpRequest request, @NotNull ServerHttpResponse response) {
         if("dev".equals(profiles)) {
             String result = "";
             try {

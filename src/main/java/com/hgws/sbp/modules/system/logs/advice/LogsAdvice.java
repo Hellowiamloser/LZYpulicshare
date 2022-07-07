@@ -2,8 +2,7 @@ package com.hgws.sbp.modules.system.logs.advice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hgws.sbp.commons.annotation.LoggerOperation;
-import com.hgws.sbp.modules.system.logs.dao.LogsDao;
-import com.hgws.sbp.modules.system.logs.entity.Logs;
+import com.hgws.sbp.modules.system.logs.service.LogsService;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -12,11 +11,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author zhouhonggang
@@ -30,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 public class LogsAdvice {
 
     @Autowired
-    private LogsDao logsDao;
+    private LogsService logsService;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -65,35 +59,8 @@ public class LogsAdvice {
         String result = "无结果";
         if(!ObjectUtils.isEmpty(object))
             result = objectMapper.writeValueAsString(object);
-        this.logger(end-start, annotation.module(), annotation.type().getValue(), annotation.message(), params, result);
+        logsService.insert(end-start, annotation.module(), annotation.type().getValue(), annotation.message(), params, result);
         return object;
-    }
-
-    /**
-     * 日志提那家
-     * @param times     耗时
-     * @param module    模块
-     * @param type      类型
-     * @param message   消息
-     */
-    public void logger(long times, String module, String type, String message, String params, String result)
-    {
-        //获取请求对象
-        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) requestAttributes;
-        HttpServletRequest request = servletRequestAttributes.getRequest();
-
-        Logs entity = new Logs();
-        entity.setModule(module);
-        entity.setType(type);
-        entity.setMessage(message);
-        entity.setExecuteParams(params);
-        entity.setReturnValue(result);
-        entity.setRequestMethod(request.getMethod());
-        entity.setRequestIpaddr(request.getRemoteAddr());
-        entity.setRequestUrl(request.getRequestURL().toString());
-        entity.setExecuteTime(times);
-        logsDao.insert(entity);
     }
 
 }

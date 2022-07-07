@@ -24,6 +24,8 @@ public class UserUtils {
     @Autowired
     private SpringSecurityProperties springSecurityProperties;
 
+    private final static String ANONYMITY_TOKEN = "eyJhbGciOiJIUzUxMiIsInppcCI6IkRFRiJ9.eNqqVspMUbIy0FEqLU4tykvMTVWyUnras__phF4lHaXM4mIgN6OkpMBKX9_QyFzPAAgN9YEyxaVJKAoTS5SsDM1MzQ3NTU2MjHSUUisKYAKWBkZGtQAAAAD__w.vusoAyOqjCIK7V6YNm52ruzOBEEFkIdjNg2ASqaHB-6yTjY7eR7mJPVmmRFg_ogYv2ka4vTptfh-UXKRKGcr_g";
+
     public int getUserId()
     {
         Claims claims = jwtUtils.getTokenClaims(getToken());
@@ -43,7 +45,7 @@ public class UserUtils {
         String prefix = springSecurityProperties.getJwt().getPrefix();
         if(StringUtils.hasLength(token) && token.startsWith(prefix))
             return token.substring(prefix.length());
-        return null;
+        return ANONYMITY_TOKEN;
     }
 
 }

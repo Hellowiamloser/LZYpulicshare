@@ -3,9 +3,11 @@ package com.hgws.sbp.configurations.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hgws.sbp.commons.base.result.Result;
 import com.hgws.sbp.commons.enumerate.ResultEnumerate;
+import com.hgws.sbp.commons.enumerate.TypeEnumerate;
 import com.hgws.sbp.commons.utils.JwtUtils;
 import com.hgws.sbp.components.properties.SpringSecurityProperties;
 import com.hgws.sbp.components.result.ResponseResult;
+import com.hgws.sbp.modules.system.logs.service.LogsService;
 import com.hgws.sbp.modules.system.user.entity.User;
 import com.hgws.sbp.modules.system.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +64,9 @@ public class SpringSecurityConfiguration {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private LogsService logsService;
 
     @Autowired
     private UserService userService;
@@ -163,12 +168,16 @@ public class SpringSecurityConfiguration {
                     ResultEnumerate enumerate = ResultEnumerate.LOGIN_NOT_LOGGED;
                     // 返回响应到客户端
                     ResponseResult.result(Result.failure(enumerate), HttpStatus.FORBIDDEN.value());
+                    // 日志记录
+                    logsService.insert(0, "未登录访问", TypeEnumerate.SELECT.getValue(), enumerate.getMessage(), null, null);
                 })
                 .accessDeniedHandler((request, response, exception) -> {
                     // 用户未授权
                     ResultEnumerate enumerate = ResultEnumerate.UNAUTHORIZED_ACCESS;
                     // 返回响应到客户端
                     ResponseResult.result(Result.failure(enumerate), HttpStatus.UNAUTHORIZED.value());
+                    // 日志记录
+                    logsService.insert(0, "未授权访问", TypeEnumerate.SELECT.getValue(), enumerate.getMessage(), null, null);
                 })
                 .and()
             // 登陆认证实现
@@ -213,12 +222,16 @@ public class SpringSecurityConfiguration {
                 protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) {
                     // 默认其他登陆失败
                     ResultEnumerate enumerate = ResultEnumerate.LOGIN_OTHER_ERROR;
-                    if(exception instanceof UsernameNotFoundException)
+                    if(exception instanceof UsernameNotFoundException) {
                         enumerate = ResultEnumerate.LOGIN_USER_NOT_EXIST;
-                    else if(exception instanceof BadCredentialsException)
+                        logsService.insert(0, "登陆失败", TypeEnumerate.SELECT.getValue(), enumerate.getMessage(), null, null);
+                    } else if(exception instanceof BadCredentialsException) {
                         enumerate = ResultEnumerate.LOGIN_PASS_INPUT_ERROR;
-                    else if(exception instanceof LockedException)
+                        logsService.insert(0, "登陆失败", TypeEnumerate.SELECT.getValue(), enumerate.getMessage(), null, null);
+                    } else if(exception instanceof LockedException) {
                         enumerate = ResultEnumerate.LOGIN_USER_LOCKED;
+                        logsService.insert(0, "登陆失败", TypeEnumerate.SELECT.getValue(), enumerate.getMessage(), null, null);
+                    }
                     // 返回响应到客户端
                     ResponseResult.result(Result.failure(enumerate));
                 }
@@ -239,25 +252,37 @@ public class SpringSecurityConfiguration {
                     // 根据账号查询用户信息
                     User entity = userService.loadUserByUsername(username);
                     // 生成jwt token
-                    String token = jwtUtils.createToken(entity.getId(), entity.getName());
+                    String accessToken = jwtUtils.accessToken(entity.getId(), entity.getName());
+                    String refreshToken = jwtUtils.refreshToken(entity.getId(), entity.getName());
                     // 返回响应到客户端
                     ResultEnumerate enumerate = ResultEnumerate.LOGIN_SUCCESS;
-                    ResponseResult.result(Result.success(enumerate, token));
+                    ResponseResult.result(Result.success(enumerate, Map.of(
+                            "access_token", accessToken,
+                            "refresh_token", refreshToken)));
+
+                    logsService.insert(0, "登陆成功", TypeEnumerate.SELECT.getValue(), enumerate.getMessage(), null, null);
                 }
             })
             /*
              * 核心过滤器 认证拦截
              */
             .addFilter(new BasicAuthenticationFilter(configuration.getAuthenticationManager()) {
+                // 拦截除登陆及白名单外所有请求
                 @Override
                 protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+                    // 从请求头中获取token
                     String token = request.getHeader(springSecurityProperties.getJwt().getHeader());
+                    // 获取token的前缀名称
                     String prefix = springSecurityProperties.getJwt().getPrefix();
-                    if(StringUtils.hasLength(token) && token.startsWith(prefix))
-                    {
+                    if(StringUtils.hasLength(token) && token.startsWith(prefix)) {
+                        // 获取真实的token
                         String realToken = token.substring(prefix.length());
-                        if(!jwtUtils.isExpiration(realToken))
-                        {
+                        // 判断token是否已经过期
+                        if(jwtUtils.isExpiration(realToken)) {
+                            ResultEnumerate enumerate = ResultEnumerate.TOKEN_ALREADY_EXPIRED;
+                            ResponseResult.result(Result.success(enumerate), HttpStatus.FORBIDDEN.value());
+                            return;
+                        } else {
                             String username = jwtUtils.getUsername(realToken);
                             Collection<SimpleGrantedAuthority> authoritiesList = new ArrayList<>();
                             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authoritiesList);

@@ -25,11 +25,29 @@ public class JwtUtils {
     private SpringSecurityProperties properties;
 
     /**
+     * 生成认证访问token
+     * @param username 账号
+     * @return 认证token
+     */
+    public String accessToken(int id, String username) {
+        return createTokenTimes(id, username, properties.getJwt().getExpiration());
+    }
+
+    /**
+     * 生成认证刷新token
+     * @param username 账号
+     * @return 认证token
+     */
+    public String refreshToken(int id, String username) {
+        return createTokenTimes(id, username, properties.getJwt().getRefresh());
+    }
+
+    /**
      * 生成认证token
      * @param username 账号
      * @return 认证token
      */
-    public String createToken(int id, String username) {
+    public String createTokenTimes(int id, String username, long times) {
         return Jwts.builder()
             .claim("id", id)
             .claim("username", username)//用户基础信息
@@ -37,7 +55,7 @@ public class JwtUtils {
             .setSubject(username)//签发账号
             .signWith(SignatureAlgorithm.HS512, properties.getJwt().getSecret()) //设置签名秘钥
             .setIssuedAt(new Date())//设置签发时间
-            .setExpiration(new Date(System.currentTimeMillis() + properties.getJwt().getExpiration() * 1000))//设置签发过期时间
+            .setExpiration(new Date(System.currentTimeMillis() + times * 1000))//设置签发过期时间
             .compressWith(CompressionCodecs.DEFLATE)//对于荷载内容压缩
             .compact();
     }

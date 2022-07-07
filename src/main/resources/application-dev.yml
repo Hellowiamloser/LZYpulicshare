@@ -24,3 +24,15 @@ mybatis-plus:
     configuration:
         #开发阶段输出日志
         log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+security:
+    #白名单
+    white-list:
+        - /swagger-ui/**
+        - /swagger-resources/**
+        - /v3/api-docs/**
+    jwt:
+        secret: secret
+        issuer: "http://127.0.0.1/"
+        expiration: 3600
+        refresh: 86400
+        remember: 604800
