@@ -220,17 +220,16 @@ public class SpringSecurityConfiguration {
                  */
                 @Override
                 protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) {
+                    // 清空认证对象
+                    SecurityContextHolder.clearContext();
                     // 默认其他登陆失败
                     ResultEnumerate enumerate = ResultEnumerate.LOGIN_OTHER_ERROR;
                     if(exception instanceof UsernameNotFoundException) {
                         enumerate = ResultEnumerate.LOGIN_USER_NOT_EXIST;
-                        logsService.insert(0, "登陆失败", TypeEnumerate.SELECT.getValue(), enumerate.getMessage(), null, null);
                     } else if(exception instanceof BadCredentialsException) {
                         enumerate = ResultEnumerate.LOGIN_PASS_INPUT_ERROR;
-                        logsService.insert(0, "登陆失败", TypeEnumerate.SELECT.getValue(), enumerate.getMessage(), null, null);
                     } else if(exception instanceof LockedException) {
                         enumerate = ResultEnumerate.LOGIN_USER_LOCKED;
-                        logsService.insert(0, "登陆失败", TypeEnumerate.SELECT.getValue(), enumerate.getMessage(), null, null);
                     }
                     // 返回响应到客户端
                     ResponseResult.result(Result.failure(enumerate));
@@ -259,8 +258,6 @@ public class SpringSecurityConfiguration {
                     ResponseResult.result(Result.success(enumerate, Map.of(
                             "access_token", accessToken,
                             "refresh_token", refreshToken)));
-
-                    logsService.insert(0, "登陆成功", TypeEnumerate.SELECT.getValue(), enumerate.getMessage(), null, null);
                 }
             })
             /*

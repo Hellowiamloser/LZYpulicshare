@@ -13,9 +13,9 @@ public enum TypeEnumerate {
      */
     INSERT("insert"),
     UPDATE("update"),
-    INSERT_UPDATE("insert_update"),
     DELETE("delete"),
-    SELECT("select");
+    SELECT("select"),
+    LOGIN("login");
     private String value;
     public String getValue() {
         return value;
