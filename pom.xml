@@ -124,10 +124,10 @@
             <optional>true</optional>
         </dependency>
         <!-- spring indexer spring.components -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-indexer</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework</groupId>-->
+<!--            <artifactId>spring-context-indexer</artifactId>-->
+<!--        </dependency>-->
         <!-- spring boot 热部署 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
