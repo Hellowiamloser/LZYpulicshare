@@ -1,10 +1,12 @@
 package com.hgws.sbp.commons.base.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.hgws.sbp.commons.validator.group.Update;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
@@ -22,6 +24,7 @@ public class Base {
      * 主键ID数据库自增
      */
     @TableId(type= IdType.AUTO)
+    @NotNull(message = "编辑时主键ID为必填项", groups = Update.class)
     private Integer id;
     /**
      * 乐观锁(在并发操作时使用)
