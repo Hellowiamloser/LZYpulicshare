@@ -30,7 +30,7 @@ public class AutoFillMetaObjectHandler implements MetaObjectHandler {
         Integer userId = userUtils.getUserId();
         this.fillStrategy(metaObject, "revision", 1);
         this.fillStrategy(metaObject, "createdBy", userId);
-        this.strictInsertFill(metaObject, "createdTime", LocalDateTime::now, LocalDateTime.class);
+        this.fillStrategy(metaObject, "createdTime", LocalDateTime.now());
     }
 
     /**
@@ -41,7 +41,7 @@ public class AutoFillMetaObjectHandler implements MetaObjectHandler {
     public void updateFill(MetaObject metaObject) {
         Integer userId = userUtils.getUserId();
         this.fillStrategy(metaObject, "updatedBy", userId);
-        this.strictInsertFill(metaObject, "updatedTime", LocalDateTime::now, LocalDateTime.class);
+        this.fillStrategy(metaObject, "updatedTime", LocalDateTime.now());
     }
 
 }
