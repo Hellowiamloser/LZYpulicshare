@@ -41,9 +41,6 @@ mybatis-plus:
             logic-delete-field: delete_flag
         banner: false
 security:
-    #白名单
-    white-list:
-        - /druid/**
     jwt:
         header: Authorization
         prefix: "Bearer "

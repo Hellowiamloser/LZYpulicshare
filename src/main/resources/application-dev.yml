@@ -19,6 +19,9 @@ spring:
             max-active: 50
             #在连接池初始创建成功后向连接池写入的数量
             initial-size: 10
+    redis:
+        host: 127.0.0.1
+        port: 6379
 mybatis-plus:
     #配置信息
     configuration:
@@ -27,6 +30,7 @@ mybatis-plus:
 security:
     #白名单
     white-list:
+        - /druid/**
         - /swagger-ui/**
         - /swagger-resources/**
         - /v3/api-docs/**
