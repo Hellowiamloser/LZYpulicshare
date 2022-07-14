@@ -35,10 +35,4 @@ public abstract class BaseService<D extends BaseDao<T>, T extends Base> {
         return this.dao;
     }
 
-    @Transactional
-    public int insert(T entity)
-    {
-        return dao.insert(entity);
-    }
-
 }

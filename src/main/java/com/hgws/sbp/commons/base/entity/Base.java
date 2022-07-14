@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.hgws.sbp.commons.validator.group.Update;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -18,7 +17,6 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-@ToString
 public class Base {
     /**
      * 主键ID数据库自增
