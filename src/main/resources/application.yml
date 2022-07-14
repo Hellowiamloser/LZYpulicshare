@@ -18,6 +18,11 @@ spring:
         date-format: yyyy-MM-dd
         #忽略为null属性
         default-property-inclusion: non_null
+    #文件上传限制
+    servlet:
+        multipart:
+            max-file-size: 2MB
+            max-request-size: 18MB
 mybatis-plus:
     #扫描映射文件
     mapper-locations: classpath:/mapper/*/*.xml

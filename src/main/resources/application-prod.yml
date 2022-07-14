@@ -1,3 +1,5 @@
+server:
+    path: /usr/local/images/
 spring:
     datasource:
         #数据库连接四要素
