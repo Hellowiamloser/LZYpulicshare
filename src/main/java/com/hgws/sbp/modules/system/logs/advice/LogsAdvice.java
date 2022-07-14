@@ -11,6 +11,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Arrays;
 
 /**
  * @author zhouhonggang
@@ -55,7 +58,10 @@ public class LogsAdvice {
         Object[] args = joinPoint.getArgs();
         String params = "无参数";
         if(!ObjectUtils.isEmpty(args))
-            params = objectMapper.writeValueAsString(args);
+            if(Arrays.stream(args).noneMatch(arg -> (arg instanceof MultipartFile || arg instanceof MultipartFile[])))
+                params = objectMapper.writeValueAsString(args);
+            else
+                params = "文件上传";
         String result = "无结果";
         if(!ObjectUtils.isEmpty(object))
             result = objectMapper.writeValueAsString(object);
