@@ -50,9 +50,10 @@
     <properties>
         <java.version>17</java.version>
         <mybatis.version>3.5.2</mybatis.version>
-        <druid.version>1.2.11</druid.version>
+        <druid.version>1.2.9</druid.version>
         <swagger.version>3.0.0</swagger.version>
         <jjwt.version>0.9.1</jjwt.version>
+        <thumbnailator.version>0.4.17</thumbnailator.version>
     </properties>
 
     <dependencies>
@@ -138,6 +139,12 @@
 <!--            <groupId>org.springframework</groupId>-->
 <!--            <artifactId>spring-context-indexer</artifactId>-->
 <!--        </dependency>-->
+        <!-- google image thumbnailator -->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>${thumbnailator.version}</version>
+        </dependency>
         <!-- spring boot 热部署 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
