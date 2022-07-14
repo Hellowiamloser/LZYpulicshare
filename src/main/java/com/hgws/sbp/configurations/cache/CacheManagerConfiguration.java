@@ -86,7 +86,7 @@ public class CacheManagerConfiguration extends CachingConfigurerSupport {
          * params: 方法参数
          */
         return (target, method, params) -> {
-            StringBuilder builder = new StringBuilder(method.getName());
+            StringBuilder builder = new StringBuilder(method.getName()+":");
             for (Object param:params) {
                 builder.append(param).append(":");
             }
