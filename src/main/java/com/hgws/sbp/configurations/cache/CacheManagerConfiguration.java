@@ -1,7 +1,9 @@
 package com.hgws.sbp.configurations.cache;
 
+import com.hgws.sbp.configurations.cache.writer.DynamicTTLCacheWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -11,12 +13,15 @@ import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.cache.interceptor.SimpleCacheResolver;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.BatchStrategies;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 import java.util.Objects;
@@ -34,6 +39,8 @@ import java.util.Objects;
 public class CacheManagerConfiguration extends CachingConfigurerSupport {
 
     @Autowired
+    private CacheProperties cacheProperties;
+    @Autowired
     private RedisSerializer<String> keySerializer;
     @Autowired
     private RedisSerializer<Object> valueSerializer;
@@ -46,22 +53,29 @@ public class CacheManagerConfiguration extends CachingConfigurerSupport {
      */
     @Override
     public CacheManager cacheManager() {
-        //redis缓存配置
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                // 缓存存储时长
-                .entryTtl(Duration.ofMinutes(10))
-                // 禁止缓存null
-                //.disableCachingNullValues()
-                // 指定缓存key序列化器
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(keySerializer))
-                // 指定缓存value序列化器
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(valueSerializer));
+        //创建Redis缓存配置信息
+        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig();
+        CacheProperties.Redis redisProperties = cacheProperties.getRedis();
+        //指定缓存过期时间
+        if(!ObjectUtils.isEmpty(redisProperties.getTimeToLive()))
+            redisCacheConfiguration = redisCacheConfiguration.entryTtl(redisProperties.getTimeToLive());
+        //是否缓存空数据
+        if(!redisProperties.isCacheNullValues())
+            redisCacheConfiguration = redisCacheConfiguration.disableCachingNullValues();
+        //设置缓存别名
+        if(StringUtils.hasLength(redisProperties.getKeyPrefix()))
+            redisCacheConfiguration = redisCacheConfiguration.prefixCacheNameWith(redisProperties.getKeyPrefix());
+        //指定key序列化机制
+        redisCacheConfiguration = redisCacheConfiguration.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(keySerializer));
+        //指定value序列化机制
+        redisCacheConfiguration = redisCacheConfiguration.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(valueSerializer));
+
         return RedisCacheManager
-                // 注入redis连接池
-                .builder(RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory))
-                // 注入redis默认配置
+                // 默认时长
+                //.builder(RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory))
+                // 动态时长解决缓存雪崩
+                .builder(new DynamicTTLCacheWriter(redisConnectionFactory, BatchStrategies.keys()))
                 .cacheDefaults(redisCacheConfiguration)
-                // 完成RedisCacheManager构建
                 .build();
     }
 

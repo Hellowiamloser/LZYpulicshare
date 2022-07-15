@@ -3,6 +3,8 @@ package com.hgws.sbp.configurations.swagger;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -23,9 +25,19 @@ import springfox.documentation.spring.web.plugins.Docket;
 @Configuration
 public class SwaggerConfiguration {
 
+    /**
+     * 创建Swagger API
+     * @param environment 运行环境
+     * @return Docket
+     */
     @Bean
-    public Docket createRestApi() {
+    public Docket createRestApi(Environment environment) {
+        //设置要显示的swagger环境
+        Profiles profiles = Profiles.of("dev");
+        //通过 environment.acceptsProfiles判断自己是否处于自己设定的环境
+        boolean enable = environment.acceptsProfiles(profiles);
         return new Docket(DocumentationType.OAS_30)
+                .enable(enable)
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
@@ -33,6 +45,10 @@ public class SwaggerConfiguration {
                 .build();
     }
 
+    /**
+     * Swagger API Information
+     * @return ApiInfo
+     */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("\u5728\u7ebf\u63a5\u53e3\u6587\u6863")

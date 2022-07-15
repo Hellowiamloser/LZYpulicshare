@@ -201,7 +201,7 @@ public class SpringSecurityConfiguration {
                         try {
                             // 获取请求中 Content-Type: application/json 参数
                             InputStream inputStream = request.getInputStream();
-                            Map<String, String> params = objectMapper.readValue(inputStream, Map.class);
+                            var params = objectMapper.readValue(inputStream, Map.class);
                             // 创建SpringSecurity认证对象
                             UsernamePasswordAuthenticationToken authenticationToken =
                                     new UsernamePasswordAuthenticationToken(params.get("username"), params.get("password"));

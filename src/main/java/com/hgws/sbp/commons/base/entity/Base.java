@@ -33,6 +33,7 @@ public class Base {
      */
     @Version
     @TableField(fill = FieldFill.INSERT)
+    @NotNull(message = "编辑时乐观锁为必填项", groups = Update.class)
     private Integer revision;
     /**
      * 删除状态0:启用1:删除

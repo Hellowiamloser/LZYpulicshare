@@ -2,6 +2,7 @@ package com.hgws.sbp.commons.base.service;
 
 import com.hgws.sbp.commons.base.dao.BaseDao;
 import com.hgws.sbp.commons.base.entity.Base;
+import com.hgws.sbp.commons.utils.UserUtils;
 import com.hgws.sbp.modules.system.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public abstract class BaseService<D extends BaseDao<T>, T extends Base> {
      */
     @Autowired
     public D dao;
+
+    @Autowired
+    public UserUtils userUtils;
 
     /**
      * 获取当前模块数据层实现
