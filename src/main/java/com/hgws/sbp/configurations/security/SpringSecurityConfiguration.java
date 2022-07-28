@@ -2,10 +2,12 @@ package com.hgws.sbp.configurations.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hgws.sbp.commons.base.result.Result;
+import com.hgws.sbp.commons.constant.Constant;
 import com.hgws.sbp.commons.enumerate.ResultEnumerate;
 import com.hgws.sbp.commons.enumerate.TypeEnumerate;
 import com.hgws.sbp.commons.utils.JwtUtils;
 import com.hgws.sbp.components.properties.SpringSecurityProperties;
+import com.hgws.sbp.components.redis.RedisComponent;
 import com.hgws.sbp.components.result.ResponseResult;
 import com.hgws.sbp.modules.system.logs.service.LogsService;
 import com.hgws.sbp.modules.system.user.entity.User;
@@ -73,6 +75,9 @@ public class SpringSecurityConfiguration {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private RedisComponent redisComponent;
 
     @Autowired
     public PasswordEncoder passwordEncoder;
@@ -183,6 +188,7 @@ public class SpringSecurityConfiguration {
             // 登陆认证实现
             .authenticationProvider(daoAuthenticationProvider())
             /*
+             * FilterChain 过滤器链 []
              * UsernamePasswordAuthenticationFilter是AbstractAuthenticationProcessingFilter针对使⽤⽤户名和密码进⾏⾝份验证⽽定制化的⼀个过滤器。
              * 默认的登录请求pattern为"/login"，并且为POST请求。这个过滤器就会委托认证管理器authenticationManager来验证登录。
              */
@@ -225,9 +231,11 @@ public class SpringSecurityConfiguration {
                     // 默认其他登陆失败
                     ResultEnumerate enumerate = ResultEnumerate.LOGIN_OTHER_ERROR;
                     if(exception instanceof UsernameNotFoundException) {
-                        enumerate = ResultEnumerate.LOGIN_USER_NOT_EXIST;
+                        //enumerate = ResultEnumerate.LOGIN_USER_NOT_EXIST;
+                        enumerate = ResultEnumerate.LOGIN_USER_PASS_ERROR;
                     } else if(exception instanceof BadCredentialsException) {
-                        enumerate = ResultEnumerate.LOGIN_PASS_INPUT_ERROR;
+                        //enumerate = ResultEnumerate.LOGIN_PASS_INPUT_ERROR;
+                        enumerate = ResultEnumerate.LOGIN_USER_PASS_ERROR;
                     } else if(exception instanceof LockedException) {
                         enumerate = ResultEnumerate.LOGIN_USER_LOCKED;
                     }
@@ -250,6 +258,12 @@ public class SpringSecurityConfiguration {
                     String username = user.getUsername();
                     // 根据账号查询用户信息
                     User entity = userService.loadUserByUsername(username);
+
+                    // 根据账号查询用户权限
+                    List<String> authorities = userService.loadUserAuthorities(username);
+                    redisComponent.set(Constant.AUTHORITIES_KEY+username, authorities);
+
+                    // Redis + uuid
                     // 生成jwt token
                     String accessToken = jwtUtils.accessToken(entity.getId(), entity.getName());
                     String refreshToken = jwtUtils.refreshToken(entity.getId(), entity.getName());
@@ -281,8 +295,18 @@ public class SpringSecurityConfiguration {
                             return;
                         } else {
                             String username = jwtUtils.getUsername(realToken);
+                            // 准备当前用户权限集合
                             Collection<SimpleGrantedAuthority> authoritiesList = new ArrayList<>();
-                            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authoritiesList);
+
+                            List<String> authorities = (List<String>)redisComponent.get(Constant.AUTHORITIES_KEY+username);
+                            authorities.forEach(code -> {
+                                authoritiesList.add(new SimpleGrantedAuthority(code));
+                            });
+
+                            // 创建认证用户token对象
+                            UsernamePasswordAuthenticationToken authenticationToken =
+                                    new UsernamePasswordAuthenticationToken(username, null, authoritiesList);
+                            // 通知SpringSecurity已认证
                             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                         }
                     }

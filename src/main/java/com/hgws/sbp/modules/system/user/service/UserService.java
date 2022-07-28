@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 /**
  * @author zhouhonggang
  * @version 1.0.0
@@ -123,6 +125,16 @@ public class UserService extends BaseService<UserDao, User> {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.eq("name", username);
         return dao.selectOne(wrapper);
+    }
+
+    /**
+     * 根据登陆账号查询用户权限
+     * @param username 登陆账号
+     * @return 用户权限
+     */
+    public List<String> loadUserAuthorities(String username)
+    {
+        return dao.loadUserAuthorities(username);
     }
 
 }

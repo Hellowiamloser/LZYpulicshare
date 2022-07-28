@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.CacheErrorHandler;
@@ -24,6 +25,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -99,13 +101,9 @@ public class CacheManagerConfiguration extends CachingConfigurerSupport {
          * method: 拦截方法
          * params: 方法参数
          */
-        return (target, method, params) -> {
-            StringBuilder builder = new StringBuilder(method.getName()+":");
-            for (Object param:params) {
-                builder.append(param).append(":");
-            }
-            return builder.toString();
-        };
+        return (target, method, params) -> new StringBuilder()
+                .append(method.getName()).append(":")
+                .append(StringUtils.arrayToDelimitedString(params, ":"));
     }
 
     /**
