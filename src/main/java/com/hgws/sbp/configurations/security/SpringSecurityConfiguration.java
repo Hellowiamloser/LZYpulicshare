@@ -260,8 +260,8 @@ public class SpringSecurityConfiguration {
                     User entity = userService.loadUserByUsername(username);
 
                     // 根据账号查询用户权限
-                    List<String> authorities = userService.loadUserAuthorities(username);
-                    redisComponent.set(Constant.AUTHORITIES_KEY+username, authorities);
+                    //List<String> authorities = userService.loadUserAuthorities(username);
+                    //redisComponent.set(Constant.AUTHORITIES_KEY+username, authorities);
 
                     // Redis + uuid
                     // 生成jwt token
@@ -298,10 +298,11 @@ public class SpringSecurityConfiguration {
                             // 准备当前用户权限集合
                             Collection<SimpleGrantedAuthority> authoritiesList = new ArrayList<>();
 
-                            List<String> authorities = (List<String>)redisComponent.get(Constant.AUTHORITIES_KEY+username);
-                            authorities.forEach(code -> {
-                                authoritiesList.add(new SimpleGrantedAuthority(code));
-                            });
+                            List<String> authorities = new ArrayList<>();
+                            //List<String> authorities = (List<String>)redisComponent.get(Constant.AUTHORITIES_KEY+username);
+                            //authorities.forEach(code -> {
+                            //    authoritiesList.add(new SimpleGrantedAuthority(code));
+                            //});
 
                             // 创建认证用户token对象
                             UsernamePasswordAuthenticationToken authenticationToken =
