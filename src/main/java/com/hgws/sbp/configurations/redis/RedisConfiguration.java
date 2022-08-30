@@ -18,7 +18,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 /**
  * @author zhouhonggang
  * @version 1.0.0
- * @project spring-boot-pro.git
+ * @project spring-boot-pro
  * @datetime 2022-07-12 14:28
  * @description: RedisTemplate配置
  */

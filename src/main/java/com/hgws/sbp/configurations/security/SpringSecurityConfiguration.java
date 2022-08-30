@@ -298,7 +298,7 @@ public class SpringSecurityConfiguration {
                             // 准备当前用户权限集合
                             Collection<SimpleGrantedAuthority> authoritiesList = new ArrayList<>();
 
-                            List<String> authorities = new ArrayList<>();
+                            //List<String> authorities = new ArrayList<>();
                             //List<String> authorities = (List<String>)redisComponent.get(Constant.AUTHORITIES_KEY+username);
                             //authorities.forEach(code -> {
                             //    authoritiesList.add(new SimpleGrantedAuthority(code));

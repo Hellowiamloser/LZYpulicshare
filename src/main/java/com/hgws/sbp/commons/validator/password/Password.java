@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 /**
  * @author zhouhonggang
  * @version 1.0.0
- * @project springboot-development-platform
+ * @project spring-boot-pro
  * @datetime 2022-04-13 11:37
  * @description: 自定义校验规则实现
  */
