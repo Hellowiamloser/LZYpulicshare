@@ -23,6 +23,7 @@ spring:
             initial-size: 10
 security:
     white-list:
+        - /favicon.ico
         - /druid/**
     jwt:
         secret: tjYokBop1fOXj9SttC0ZKnr

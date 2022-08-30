@@ -31,6 +31,7 @@ mybatis-plus:
 security:
     #白名单
     white-list:
+        - /favicon.ico
         - /druid/**
         - /swagger-ui/**
         - /swagger-resources/**
