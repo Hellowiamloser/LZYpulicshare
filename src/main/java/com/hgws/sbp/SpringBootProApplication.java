@@ -21,7 +21,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 /**
  * @author zhouhonggang
  * @version 1.0.0
- * @project spring-boot-pro.git
+ * @project spring-boot-pro
  * @datetime 2022-07-11 09:28
  * @description: 应用启动入口
  */

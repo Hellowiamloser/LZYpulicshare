@@ -71,7 +71,7 @@ CREATE TABLE `system_role`
     `updated_time` datetime     NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 1 COMMENT = '系统管理_角色管理'
+  AUTO_INCREMENT = 3 COMMENT = '系统管理_角色管理'
   ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -92,7 +92,7 @@ CREATE TABLE `system_authority`
     `updated_time` datetime     NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 1 COMMENT = '系统管理_权限管理'
+  AUTO_INCREMENT = 6 COMMENT = '系统管理_权限管理'
   ROW_FORMAT = Dynamic;
 
 -- ----------------------------

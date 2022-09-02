@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -46,11 +47,11 @@ public class UserController extends BaseController {
         @ApiImplicitParam(name = "address", value = "家庭住址", required = true, dataTypeClass = String.class),
         @ApiImplicitParam(name = "remarks", value = "备注信息", dataTypeClass = String.class)
     })
+    @PreAuthorize("hasAuthority('system:user:save')")
     public Integer save(@RequestBody @Validated User entity)
     {
         return userService.insert(entity);
     }
-
 
     @PutMapping
     @LoggerOperation(module = "系统-用户", message = "用户注册修改", type = TypeEnumerate.UPDATE)
@@ -68,6 +69,7 @@ public class UserController extends BaseController {
         @ApiImplicitParam(name = "remarks", value = "备注信息", dataTypeClass = String.class),
         @ApiImplicitParam(name = "revision", value = "乐观锁", required = true, dataTypeClass = Integer.class)
     })
+    @PreAuthorize("hasAuthority('system:user:update')")
     public Integer update(@RequestBody @Validated User entity)
     {
         return userService.update(entity);
@@ -77,6 +79,7 @@ public class UserController extends BaseController {
     @LoggerOperation(module = "系统-用户", message = "用户主键查询", type = TypeEnumerate.DELETE)
     @ApiOperation("删除用户")
     @ApiImplicitParam(name = "id", value = "用户主键ID", dataTypeClass = Integer.class)
+    @PreAuthorize("hasAuthority('system:user:delete')")
     public Integer delete(@PathVariable int id)
     {
         return userService.delete(id);
@@ -86,7 +89,7 @@ public class UserController extends BaseController {
     @LoggerOperation(module = "系统-用户", message = "用户主键查询")
     @ApiOperation("ID查询用户")
     @ApiImplicitParam(name = "id", value = "用户主键ID", dataTypeClass = Integer.class)
-    //@PreAuthorize("hasAuthority('system:user:load')") 权限认证
+    @PreAuthorize("hasAuthority('system:user:load')")
     public User load(@PathVariable int id)
     {
         return userService.load(id);
@@ -101,6 +104,7 @@ public class UserController extends BaseController {
         @ApiImplicitParam(name = "pageNo", value = "当前页: 默认1", dataTypeClass = Integer.class),
         @ApiImplicitParam(name = "pageSize", value = "每页条数: 默认10", dataTypeClass = Integer.class)
     })
+    @PreAuthorize("hasAuthority('system:user:page')")
     public Page<User> page(@RequestBody @ApiIgnore User entity)
     {
         return userService.page(entity);

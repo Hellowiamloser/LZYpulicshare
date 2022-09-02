@@ -85,9 +85,6 @@ public class SpringSecurityConfiguration {
     @Autowired
     private SpringSecurityProperties springSecurityProperties;
 
-    private final static String USER_NOT_FOUND = "账号不存在";
-    private final static String USER_WAS_LOCKED = "账号已锁定";
-
     /**
      * UserDetailsService身份认证
      * 实现AuthenticationProvider的DaoAuthenticationProvider完成身份认证
@@ -99,7 +96,7 @@ public class SpringSecurityConfiguration {
             User user = userService.loadUserByUsername(username);
             boolean accountNonLocked = true;
             if(ObjectUtils.isEmpty(user))
-                throw new UsernameNotFoundException(USER_NOT_FOUND);
+                throw new UsernameNotFoundException(Constant.USER_NOT_FOUND);
             else if(user.getLocked() == 1)
                 accountNonLocked = false;
                 //throw new LockedException("用户已锁定");
@@ -116,7 +113,7 @@ public class SpringSecurityConfiguration {
     {
         return details -> {
             if(!details.isAccountNonLocked())
-                throw new LockedException(USER_WAS_LOCKED);
+                throw new LockedException(Constant.USER_WAS_LOCKED);
         };
     }
 
@@ -174,7 +171,7 @@ public class SpringSecurityConfiguration {
                     // 返回响应到客户端
                     ResponseResult.result(Result.failure(enumerate), HttpStatus.FORBIDDEN.value());
                     // 日志记录
-                    logsService.insert(0, "未登录访问", TypeEnumerate.SELECT.getValue(), enumerate.getMessage(), null, null);
+                    logsService.insert(0, Constant.UNLOGGED_ACCESS, TypeEnumerate.SELECT.getValue(), enumerate.getMessage(), null, null);
                 })
                 .accessDeniedHandler((request, response, exception) -> {
                     // 用户未授权
@@ -182,7 +179,7 @@ public class SpringSecurityConfiguration {
                     // 返回响应到客户端
                     ResponseResult.result(Result.failure(enumerate), HttpStatus.UNAUTHORIZED.value());
                     // 日志记录
-                    logsService.insert(0, "未授权访问", TypeEnumerate.SELECT.getValue(), enumerate.getMessage(), null, null);
+                    logsService.insert(0, Constant.UNAUTHORIZED_ACCESS, TypeEnumerate.SELECT.getValue(), enumerate.getMessage(), null, null);
                 })
                 .and()
             // 登陆认证实现
@@ -260,11 +257,9 @@ public class SpringSecurityConfiguration {
                     User entity = userService.loadUserByUsername(username);
 
                     // 根据账号查询用户权限
-                    //List<String> authorities = userService.loadUserAuthorities(username);
-                    //redisComponent.set(Constant.AUTHORITIES_KEY+username, authorities);
+                    List<String> authorities = userService.loadUserAuthorities(username);
+                    redisComponent.set(Constant.AUTHORITIES_KEY+username, authorities);
 
-                    // Redis + uuid
-                    // 生成jwt token
                     String accessToken = jwtUtils.accessToken(entity.getId(), entity.getName());
                     String refreshToken = jwtUtils.refreshToken(entity.getId(), entity.getName());
                     // 返回响应到客户端
@@ -298,11 +293,10 @@ public class SpringSecurityConfiguration {
                             // 准备当前用户权限集合
                             Collection<SimpleGrantedAuthority> authoritiesList = new ArrayList<>();
 
-                            //List<String> authorities = new ArrayList<>();
-                            //List<String> authorities = (List<String>)redisComponent.get(Constant.AUTHORITIES_KEY+username);
-                            //authorities.forEach(code -> {
-                            //    authoritiesList.add(new SimpleGrantedAuthority(code));
-                            //});
+                            List<String> authorities = (List<String>)redisComponent.get(Constant.AUTHORITIES_KEY+username);
+                            authorities.forEach(code -> {
+                                authoritiesList.add(new SimpleGrantedAuthority(code));
+                            });
 
                             // 创建认证用户token对象
                             UsernamePasswordAuthenticationToken authenticationToken =

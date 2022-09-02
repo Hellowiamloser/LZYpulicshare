@@ -6,6 +6,9 @@ import com.hgws.sbp.commons.base.service.BaseService;
 import com.hgws.sbp.modules.system.user.dao.UserDao;
 import com.hgws.sbp.modules.system.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,7 @@ import java.util.List;
  * @description: 系统·用户·逻辑
  */
 @Service
+@CacheConfig(cacheNames = "system:user")
 public class UserService extends BaseService<UserDao, User> {
 
     @Autowired
@@ -33,6 +37,7 @@ public class UserService extends BaseService<UserDao, User> {
      * @return 执行状态
      */
     @Transactional
+    @CacheEvict(allEntries = true)
     public int insert(User entity)
     {
         entity.setPass(passwordEncoder.encode(entity.getPass()));
@@ -45,6 +50,7 @@ public class UserService extends BaseService<UserDao, User> {
      * @return 执行状态
      */
     @Transactional
+    @CacheEvict(allEntries = true)
     public int update(User entity)
     {
         return dao.updateById(entity);
@@ -56,6 +62,7 @@ public class UserService extends BaseService<UserDao, User> {
      * @return 执行状态
      */
     @Transactional
+    @CacheEvict(allEntries = true)
     public int delete(int id) {
         return dao.deleteById(id);
     }
@@ -65,6 +72,7 @@ public class UserService extends BaseService<UserDao, User> {
      * @param id 人员主键
      * @return 人员属性
      */
+    @Cacheable
     public User load(int id) {
         return dao.selectById(id);
     }
@@ -74,6 +82,7 @@ public class UserService extends BaseService<UserDao, User> {
      * @param entity 实体
      * @return 分页对象
      */
+    @Cacheable(key = "'page:no:'+#entity.pageNo+':size:'+#entity.pageSize")
     public Page<User> page(User entity)
     {
         //分页对象
@@ -120,6 +129,7 @@ public class UserService extends BaseService<UserDao, User> {
      * @param username 登陆账号
      * @return 用户属性
      */
+    @Cacheable
     public User loadUserByUsername(String username)
     {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
@@ -132,6 +142,7 @@ public class UserService extends BaseService<UserDao, User> {
      * @param username 登陆账号
      * @return 用户权限
      */
+    @Cacheable
     public List<String> loadUserAuthorities(String username)
     {
         return dao.loadUserAuthorities(username);

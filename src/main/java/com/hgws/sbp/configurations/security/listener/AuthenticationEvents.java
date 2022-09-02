@@ -1,5 +1,6 @@
 package com.hgws.sbp.configurations.security.listener;
 
+import com.hgws.sbp.commons.constant.Constant;
 import com.hgws.sbp.commons.enumerate.ResultEnumerate;
 import com.hgws.sbp.commons.enumerate.TypeEnumerate;
 import com.hgws.sbp.modules.system.logs.service.LogsService;
@@ -34,7 +35,7 @@ public class AuthenticationEvents {
         // 获取认证账号
         String username = events.getAuthentication().getName();
         // 写入登陆日志
-        logsService.insert(0, "登陆成功", TypeEnumerate.LOGIN.getValue(), ResultEnumerate.LOGIN_SUCCESS.getMessage(), username, null);
+        logsService.insert(0, Constant.LOGIN_SUCCESS, TypeEnumerate.LOGIN.getValue(), ResultEnumerate.LOGIN_SUCCESS.getMessage(), username, null);
     }
 
     /**
@@ -49,13 +50,13 @@ public class AuthenticationEvents {
         String username = events.getAuthentication().getName();
         // 判断后写入登陆日志
         if(exception instanceof UsernameNotFoundException) {
-            logsService.insert(0, "登陆失败", TypeEnumerate.LOGIN.getValue(), ResultEnumerate.LOGIN_USER_NOT_EXIST.getMessage(), username, null);
+            logsService.insert(0, Constant.LOGIN_FAILURE, TypeEnumerate.LOGIN.getValue(), ResultEnumerate.LOGIN_USER_NOT_EXIST.getMessage(), username, null);
         } else if(exception instanceof BadCredentialsException) {
-            logsService.insert(0, "登陆失败", TypeEnumerate.LOGIN.getValue(), ResultEnumerate.LOGIN_PASS_INPUT_ERROR.getMessage(), username, null);
+            logsService.insert(0, Constant.LOGIN_FAILURE, TypeEnumerate.LOGIN.getValue(), ResultEnumerate.LOGIN_PASS_INPUT_ERROR.getMessage(), username, null);
         } else if(exception instanceof LockedException) {
-            logsService.insert(0, "登陆失败", TypeEnumerate.LOGIN.getValue(), ResultEnumerate.LOGIN_USER_LOCKED.getMessage(), username, null);
+            logsService.insert(0, Constant.LOGIN_FAILURE, TypeEnumerate.LOGIN.getValue(), ResultEnumerate.LOGIN_USER_LOCKED.getMessage(), username, null);
         } else {
-            logsService.insert(0, "登陆失败", TypeEnumerate.LOGIN.getValue(), ResultEnumerate.LOGIN_OTHER_ERROR.getMessage(), username, null);
+            logsService.insert(0, Constant.LOGIN_FAILURE, TypeEnumerate.LOGIN.getValue(), ResultEnumerate.LOGIN_OTHER_ERROR.getMessage(), username, null);
         }
     }
 

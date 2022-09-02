@@ -14,21 +14,7 @@ class RedisApplicationTests {
 
     @Test
     void contextLoads() {
-        //ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
-        //valueOperations.set("user2", "张津帆2");
-
-        /**
-         * redis是一款优秀的内存数据库 memcached
-         * string(字符, 数字, 布尔, 文件...)    key-value
-         *  首先把内容转为二进制存储
-         * hash key-(key-value)
-         * list [0, 1, 2, 3]
-         * set [无序]
-         * zset: sorted set
-         * stream 5.0+
-         * hyperloglog
-         * ... ...
-         */
+        //获取redis数据类型操作接口
         //redisTemplate.opsForValue();
         //redisTemplate.opsForHash();
         //redisTemplate.opsForList();
@@ -37,8 +23,11 @@ class RedisApplicationTests {
         //redisTemplate.opsForStream();
         //redisTemplate.opsForHyperLogLog();
 
+        /*
+         * 测试redis接口
+         */
         //ValueOperations<Object, Object> valueOperations = redisTemplate.opsForValue();
-        //valueOperations.set("user", "张津帆");
+        //valueOperations.set("user", "admin");
 
         //Object user = valueOperations.get("user");
         //System.out.println("user:"+user);
