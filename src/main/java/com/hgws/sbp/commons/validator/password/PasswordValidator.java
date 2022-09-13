@@ -13,13 +13,21 @@ import javax.validation.ConstraintValidatorContext;
  * @description: 自定义校验规则实现
  */
 public class PasswordValidator implements ConstraintValidator<Password, String> {
-    //数字
+    /**
+     * 数字规则
+     */
     public static final String NUMBER = ".*\\d+.*";
-    //大写字母
+    /**
+     * 大写字母规则
+     */
     public static final String UPPERCASE = ".*[A-Z]+.*";
-    //小写字母
+    /**
+     * 小写字母规则
+     */
     public static final String LOWERCASE = ".*[a-z]+.*";
-    //特殊符号
+    /**
+     * 特殊符号规则
+     */
     public static final String SYMBOL = ".*[~!@#$%^&*()_+|<>,.?/:;'\\[\\]{}\"]+.*";
 
     @Override
@@ -27,10 +35,18 @@ public class PasswordValidator implements ConstraintValidator<Password, String> 
         if(StringUtils.hasText(value))
         {
             int count = 0;
-            if (value.matches(PasswordValidator.NUMBER)) count++;
-            if (value.matches(PasswordValidator.LOWERCASE)) count++;
-            if (value.matches(PasswordValidator.UPPERCASE)) count++;
-            if (value.matches(PasswordValidator.SYMBOL)) count++;
+            if (value.matches(PasswordValidator.NUMBER)) {
+                count++;
+            }
+            if (value.matches(PasswordValidator.LOWERCASE)) {
+                count++;
+            }
+            if (value.matches(PasswordValidator.UPPERCASE)) {
+                count++;
+            }
+            if (value.matches(PasswordValidator.SYMBOL)) {
+                count++;
+            }
             return count > 2;
         }
         return false;

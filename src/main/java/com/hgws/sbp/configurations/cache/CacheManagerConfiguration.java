@@ -59,14 +59,17 @@ public class CacheManagerConfiguration extends CachingConfigurerSupport {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig();
         CacheProperties.Redis redisProperties = cacheProperties.getRedis();
         //指定缓存过期时间
-        if(!ObjectUtils.isEmpty(redisProperties.getTimeToLive()))
+        if(!ObjectUtils.isEmpty(redisProperties.getTimeToLive())) {
             redisCacheConfiguration = redisCacheConfiguration.entryTtl(redisProperties.getTimeToLive());
+        }
         //是否缓存空数据
-        if(!redisProperties.isCacheNullValues())
+        if(!redisProperties.isCacheNullValues()) {
             redisCacheConfiguration = redisCacheConfiguration.disableCachingNullValues();
+        }
         //设置缓存别名
-        if(StringUtils.hasLength(redisProperties.getKeyPrefix()))
+        if(StringUtils.hasLength(redisProperties.getKeyPrefix())) {
             redisCacheConfiguration = redisCacheConfiguration.prefixCacheNameWith(redisProperties.getKeyPrefix());
+        }
         //指定key序列化机制
         redisCacheConfiguration = redisCacheConfiguration.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(keySerializer));
         //指定value序列化机制

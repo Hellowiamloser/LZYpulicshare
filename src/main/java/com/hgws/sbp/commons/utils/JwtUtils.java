@@ -14,7 +14,7 @@ import java.util.Date;
  * @version 1.0.0
  * @project spring-boot-pro
  * @datetime 2022-07-05 11:20
- * @description: TODO
+ * @description: jwt工具类
  */
 @Getter
 @Setter
@@ -50,13 +50,20 @@ public class JwtUtils {
     public String createTokenTimes(int id, String username, long times) {
         return Jwts.builder()
             .claim("id", id)
-            .claim("username", username)//用户基础信息
-            .setIssuer(properties.getJwt().getIssuer())//签发标识
-            .setSubject(username)//签发账号
-            .signWith(SignatureAlgorithm.HS512, properties.getJwt().getSecret()) //设置签名秘钥
-            .setIssuedAt(new Date())//设置签发时间
-            .setExpiration(new Date(System.currentTimeMillis() + times * 1000))//设置签发过期时间
-            .compressWith(CompressionCodecs.DEFLATE)//对于荷载内容压缩
+            //用户基础信息
+            .claim("username", username)
+            //签发标识
+            .setIssuer(properties.getJwt().getIssuer())
+            //签发账号
+            .setSubject(username)
+            //设置签名秘钥
+            .signWith(SignatureAlgorithm.HS512, properties.getJwt().getSecret())
+            //设置签发时间
+            .setIssuedAt(new Date())
+            //设置签发过期时间
+            .setExpiration(new Date(System.currentTimeMillis() + times * 1000))
+            //对于荷载内容压缩
+            .compressWith(CompressionCodecs.DEFLATE)
             .compact();
     }
 
