@@ -3,12 +3,8 @@ package com.hgws.sbp.commons.base.service;
 import com.hgws.sbp.commons.base.dao.BaseDao;
 import com.hgws.sbp.commons.base.entity.Base;
 import com.hgws.sbp.commons.utils.UserUtils;
-import com.hgws.sbp.modules.system.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 
 /**
  * @author zhouhonggang
@@ -18,7 +14,10 @@ import javax.annotation.Resource;
  * @description: 公共逻辑层实例
  */
 @Transactional(
-    readOnly = true
+    timeout = 60,
+    readOnly = true,
+    rollbackFor = Exception.class,
+    noRollbackFor = RuntimeException.class
 )
 public abstract class BaseService<D extends BaseDao<T>, T extends Base> {
 

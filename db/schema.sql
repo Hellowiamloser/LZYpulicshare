@@ -104,7 +104,7 @@ CREATE TABLE `system_user_role`
     `user_id` int(11) NOT NULL COMMENT '用户外键',
     `role_id` int(11) NOT NULL COMMENT '角色外键',
     PRIMARY KEY (`user_id`, `role_id`) USING BTREE
-) ENGINE = InnoDB COMMENT = '用户角色关系'
+) ENGINE = InnoDB COMMENT = '系统管理_用户角色关系'
   ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -116,5 +116,5 @@ CREATE TABLE `system_role_authority`
     `role_id`      int(11) NOT NULL COMMENT '角色外键',
     `authority_id` int(11) NOT NULL COMMENT '权限外键',
     PRIMARY KEY (`role_id`, `authority_id`) USING BTREE
-) ENGINE = InnoDB COMMENT = '角色权限关系'
+) ENGINE = InnoDB COMMENT = '系统管理_角色权限关系'
   ROW_FORMAT = Dynamic;

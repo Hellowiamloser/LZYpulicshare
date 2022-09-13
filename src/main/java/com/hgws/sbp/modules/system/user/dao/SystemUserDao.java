@@ -1,7 +1,7 @@
 package com.hgws.sbp.modules.system.user.dao;
 
 import com.hgws.sbp.commons.base.dao.BaseDao;
-import com.hgws.sbp.modules.system.user.entity.User;
+import com.hgws.sbp.modules.system.user.entity.SystemUser;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -13,7 +13,12 @@ import java.util.List;
  * @datetime 2022-06-29 17:36
  * @description: 系统·用户·数据
  */
-public interface UserDao extends BaseDao<User> {
+public interface SystemUserDao extends BaseDao<SystemUser> {
+    /**
+     * 根据登陆账号查询用户权限列表
+     * @param username 登陆账号
+     * @return 权限列表
+     */
     @Select("select distinct a.code from system_authority a, system_role_authority ra " +
             "   where a.id = ra.authority_id and ra.role_id in " +
             "       (select role_id from system_user_role where user_id = " +

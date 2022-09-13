@@ -10,8 +10,8 @@ import com.hgws.sbp.components.properties.SpringSecurityProperties;
 import com.hgws.sbp.components.redis.RedisComponent;
 import com.hgws.sbp.components.result.ResponseResult;
 import com.hgws.sbp.modules.system.logs.service.LogsService;
-import com.hgws.sbp.modules.system.user.entity.User;
-import com.hgws.sbp.modules.system.user.service.UserService;
+import com.hgws.sbp.modules.system.user.entity.SystemUser;
+import com.hgws.sbp.modules.system.user.service.SystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -71,7 +71,7 @@ public class SpringSecurityConfiguration {
     private LogsService logsService;
 
     @Autowired
-    private UserService userService;
+    private SystemUserService userService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -93,13 +93,14 @@ public class SpringSecurityConfiguration {
     public UserDetailsService userDetailsService()
     {
         return username -> {
-            User user = userService.loadUserByUsername(username);
+            SystemUser user = userService.loadUserByUsername(username);
             boolean accountNonLocked = true;
-            if(ObjectUtils.isEmpty(user))
+            if(ObjectUtils.isEmpty(user)) {
                 throw new UsernameNotFoundException(Constant.USER_NOT_FOUND);
-            else if(user.getLocked() == 1)
+            } else if(user.getLocked() == 1) {
                 accountNonLocked = false;
-                //throw new LockedException("用户已锁定");
+            }
+            //throw new LockedException("用户已锁定");
             List<GrantedAuthority> authorities = new ArrayList<>();
             return new org.springframework.security.core.userdetails.User(user.getName(), user.getPass(), true, true, true, accountNonLocked, authorities);
         };
@@ -112,8 +113,9 @@ public class SpringSecurityConfiguration {
     public UserDetailsChecker userDetailsChecker()
     {
         return details -> {
-            if(!details.isAccountNonLocked())
+            if(!details.isAccountNonLocked()) {
                 throw new LockedException(Constant.USER_WAS_LOCKED);
+            }
         };
     }
 
@@ -254,7 +256,7 @@ public class SpringSecurityConfiguration {
                     // 获取登陆账号
                     String username = user.getUsername();
                     // 根据账号查询用户信息
-                    User entity = userService.loadUserByUsername(username);
+                    SystemUser entity = userService.loadUserByUsername(username);
 
                     // 根据账号查询用户权限
                     List<String> authorities = userService.loadUserAuthorities(username);

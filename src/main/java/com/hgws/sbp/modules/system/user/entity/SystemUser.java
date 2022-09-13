@@ -24,8 +24,7 @@ import java.time.LocalDate;
 @Setter
 @TableName(value = "system_user")
 @ApiModel("[系统·用户·属性]")
-public class User extends Base {
-
+public class SystemUser extends Base {
     @NotBlank(message = "账号不允许为空")
     @Length(min = 3, max = 16, message = "账号长度要求在{min}-{max}之间")
     @ApiModelProperty(name = "name", value = "登陆账号", required = true, dataType = "String")

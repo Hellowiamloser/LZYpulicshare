@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hgws.sbp.commons.annotation.LoggerOperation;
 import com.hgws.sbp.commons.base.controller.BaseController;
 import com.hgws.sbp.commons.enumerate.TypeEnumerate;
-import com.hgws.sbp.modules.system.user.entity.User;
-import com.hgws.sbp.modules.system.user.service.UserService;
+import com.hgws.sbp.modules.system.user.entity.SystemUser;
+import com.hgws.sbp.modules.system.user.service.SystemUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -28,10 +28,10 @@ import java.util.Date;
 @Api(tags = "[系统·用户·接口]")
 @RestController
 @RequestMapping("system/user")
-public class UserController extends BaseController {
+public class SystemUserController extends BaseController {
 
     @Autowired
-    private UserService userService;
+    private SystemUserService userService;
 
     @PostMapping
     @LoggerOperation(module = "系统-用户", message = "用户注册修改", type = TypeEnumerate.INSERT)
@@ -48,7 +48,7 @@ public class UserController extends BaseController {
         @ApiImplicitParam(name = "remarks", value = "备注信息", dataTypeClass = String.class)
     })
     @PreAuthorize("hasAuthority('system:user:save')")
-    public Integer save(@RequestBody @Validated User entity)
+    public Integer save(@RequestBody @Validated SystemUser entity)
     {
         return userService.insert(entity);
     }
@@ -70,7 +70,7 @@ public class UserController extends BaseController {
         @ApiImplicitParam(name = "revision", value = "乐观锁", required = true, dataTypeClass = Integer.class)
     })
     @PreAuthorize("hasAuthority('system:user:update')")
-    public Integer update(@RequestBody @Validated User entity)
+    public Integer update(@RequestBody @Validated SystemUser entity)
     {
         return userService.update(entity);
     }
@@ -90,7 +90,7 @@ public class UserController extends BaseController {
     @ApiOperation("ID查询用户")
     @ApiImplicitParam(name = "id", value = "用户主键ID", dataTypeClass = Integer.class)
     @PreAuthorize("hasAuthority('system:user:load')")
-    public User load(@PathVariable int id)
+    public SystemUser load(@PathVariable int id)
     {
         return userService.load(id);
     }
@@ -105,7 +105,7 @@ public class UserController extends BaseController {
         @ApiImplicitParam(name = "pageSize", value = "每页条数: 默认10", dataTypeClass = Integer.class)
     })
     @PreAuthorize("hasAuthority('system:user:page')")
-    public Page<User> page(@RequestBody @ApiIgnore User entity)
+    public Page<SystemUser> page(@RequestBody @ApiIgnore SystemUser entity)
     {
         return userService.page(entity);
     }

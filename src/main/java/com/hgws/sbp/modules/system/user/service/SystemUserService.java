@@ -3,8 +3,8 @@ package com.hgws.sbp.modules.system.user.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hgws.sbp.commons.base.service.BaseService;
-import com.hgws.sbp.modules.system.user.dao.UserDao;
-import com.hgws.sbp.modules.system.user.entity.User;
+import com.hgws.sbp.modules.system.user.dao.SystemUserDao;
+import com.hgws.sbp.modules.system.user.entity.SystemUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Service
 @CacheConfig(cacheNames = "system:user")
-public class UserService extends BaseService<UserDao, User> {
+public class SystemUserService extends BaseService<SystemUserDao, SystemUser> {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -38,7 +38,7 @@ public class UserService extends BaseService<UserDao, User> {
      */
     @Transactional
     @CacheEvict(allEntries = true)
-    public int insert(User entity)
+    public int insert(SystemUser entity)
     {
         entity.setPass(passwordEncoder.encode(entity.getPass()));
         return dao.insert(entity);
@@ -51,7 +51,7 @@ public class UserService extends BaseService<UserDao, User> {
      */
     @Transactional
     @CacheEvict(allEntries = true)
-    public int update(User entity)
+    public int update(SystemUser entity)
     {
         return dao.updateById(entity);
     }
@@ -73,7 +73,7 @@ public class UserService extends BaseService<UserDao, User> {
      * @return 人员属性
      */
     @Cacheable
-    public User load(int id) {
+    public SystemUser load(int id) {
         return dao.selectById(id);
     }
 
@@ -83,12 +83,12 @@ public class UserService extends BaseService<UserDao, User> {
      * @return 分页对象
      */
     @Cacheable(key = "'page:no:'+#entity.pageNo+':size:'+#entity.pageSize")
-    public Page<User> page(User entity)
+    public Page<SystemUser> page(SystemUser entity)
     {
         //分页对象
-        Page<User> userPage = Page.of(entity.getPageNo(), entity.getPageSize());
+        Page<SystemUser> userPage = Page.of(entity.getPageNo(), entity.getPageSize());
         //动态查询条件
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<SystemUser> queryWrapper = new QueryWrapper<>();
         //账号精确查询
         if(StringUtils.hasLength(entity.getName()))
         {
@@ -118,8 +118,6 @@ public class UserService extends BaseService<UserDao, User> {
         if(!ObjectUtils.isEmpty(entity.getBirthday()))
         {
             queryWrapper.eq("birthday", entity.getBirthday());
-            // String birthday = format.format(entity.getBirthday());
-            // queryWrapper.apply(" date_format(birthday, '%Y-%m-%d') = '" + birthday + "'");
         }
         return dao.selectPage(userPage, queryWrapper);
     }
@@ -130,9 +128,9 @@ public class UserService extends BaseService<UserDao, User> {
      * @return 用户属性
      */
     @Cacheable
-    public User loadUserByUsername(String username)
+    public SystemUser loadUserByUsername(String username)
     {
-        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        QueryWrapper<SystemUser> wrapper = new QueryWrapper<>();
         wrapper.eq("name", username);
         return dao.selectOne(wrapper);
     }

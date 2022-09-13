@@ -54,6 +54,8 @@
         <swagger.version>3.0.0</swagger.version>
         <jjwt.version>0.9.1</jjwt.version>
         <thumbnailator.version>0.4.17</thumbnailator.version>
+        <freemarker.version>2.3.31</freemarker.version>
+        <mybatis.generator.version>3.5.2</mybatis.generator.version>
     </properties>
 
     <dependencies>
@@ -134,16 +136,23 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-        <!-- spring indexer spring.components -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-context-indexer</artifactId>-->
-<!--        </dependency>-->
         <!-- google image thumbnailator -->
         <dependency>
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>
             <version>${thumbnailator.version}</version>
+        </dependency>
+        <!-- mybatis plus generator -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-generator</artifactId>
+            <version>${mybatis.generator.version}</version>
+        </dependency>
+        <!-- freemarker template -->
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>${freemarker.version}</version>
         </dependency>
         <!-- spring boot 热部署 -->
         <dependency>
