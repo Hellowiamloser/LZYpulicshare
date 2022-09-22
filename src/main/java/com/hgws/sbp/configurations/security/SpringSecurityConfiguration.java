@@ -31,6 +31,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -202,7 +203,7 @@ public class SpringSecurityConfiguration {
                 @Override
                 public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
                     // 登陆仅支持POST请求方式
-                    if (request.getMethod().equals("POST")) {
+                    if ("POST".equals(request.getMethod())) {
                         try {
                             // 获取请求中 Content-Type: application/json 参数
                             InputStream inputStream = request.getInputStream();
@@ -251,8 +252,8 @@ public class SpringSecurityConfiguration {
                 @Override
                 protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
                     // 获取认证对象
-                    org.springframework.security.core.userdetails.User user =
-                            (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+                    User user =
+                            (User) authentication.getPrincipal();
                     // 获取登陆账号
                     String username = user.getUsername();
                     // 根据账号查询用户信息
