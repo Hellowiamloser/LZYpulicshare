@@ -66,7 +66,7 @@ public class DruidConfiguration {
         bean.setInitParameters(initParams);
         //"/*" 表示过滤所有请求
         bean.setUrlPatterns(Collections.singletonList("/*"));
-        return  bean;
+        return bean;
     }
 
 }
