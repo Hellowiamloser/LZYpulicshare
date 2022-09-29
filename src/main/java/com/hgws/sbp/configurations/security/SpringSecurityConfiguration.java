@@ -1,6 +1,7 @@
 package com.hgws.sbp.configurations.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hgws.sbp.commons.annotation.AccessOperation;
 import com.hgws.sbp.commons.base.result.Result;
 import com.hgws.sbp.commons.constant.Constant;
 import com.hgws.sbp.commons.enumerate.ResultEnumerate;
@@ -15,6 +16,7 @@ import com.hgws.sbp.modules.system.user.service.SystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -24,7 +26,9 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -39,8 +43,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -48,10 +57,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouhonggang
@@ -85,6 +91,9 @@ public class SpringSecurityConfiguration {
 
     @Autowired
     private SpringSecurityProperties springSecurityProperties;
+
+    @Autowired
+    private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     /**
      * UserDetailsService身份认证
@@ -297,9 +306,12 @@ public class SpringSecurityConfiguration {
                             Collection<SimpleGrantedAuthority> authoritiesList = new ArrayList<>();
 
                             List<String> authorities = (List<String>)redisComponent.get(Constant.AUTHORITIES_KEY+username);
-                            authorities.forEach(code -> {
-                                authoritiesList.add(new SimpleGrantedAuthority(code));
-                            });
+                            if(!ObjectUtils.isEmpty(authorities))
+                            {
+                                authorities.forEach(code -> {
+                                    authoritiesList.add(new SimpleGrantedAuthority(code));
+                                });
+                            }
 
                             // 创建认证用户token对象
                             UsernamePasswordAuthenticationToken authenticationToken =
@@ -323,6 +335,43 @@ public class SpringSecurityConfiguration {
                 })
             .and()
             .build();
+    }
+
+    /**
+     * 直接允许匿名访问的接口注解 {@link AccessOperation}
+     * 不走SpringSecurityFilterChain, 无法获取SpringSecurityContextHolder
+     * @return WebSecurityCustomizer
+     */
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer()
+    {
+        Map<HttpMethod, Set<String>> accessMethods = new HashMap<>(16);
+        return (web -> {
+            WebSecurity and = web.ignoring().and();
+            Map<RequestMappingInfo, HandlerMethod> handlerMethodMap = requestMappingHandlerMapping.getHandlerMethods();
+            handlerMethodMap.forEach((info, method) -> {
+               if(method.getBeanType().isAnnotationPresent(AccessOperation.class) || method.hasMethodAnnotation(AccessOperation.class))
+               {
+                   infoMethodMap(accessMethods, info);
+                   // 添加请求方式对应的地址放行
+                   accessMethods.forEach((k, v) -> and.ignoring().antMatchers(k, v.toArray(new String[0])));
+               }
+            });
+        });
+    }
+
+    private void infoMethodMap(Map<HttpMethod, Set<String>> accessMethods, RequestMappingInfo info) {
+        for (RequestMethod methods : info.getMethodsCondition().getMethods()) {
+            HttpMethod httpMethod = HttpMethod.resolve(methods.name());
+            if (null != httpMethod) {
+                Set<String> methodPatterns = accessMethods.get(httpMethod);
+                if (CollectionUtils.isEmpty(methodPatterns)) {
+                    methodPatterns = new HashSet<>();
+                    accessMethods.put(httpMethod, methodPatterns);
+                }
+                methodPatterns.addAll(info.getPatternsCondition().getPatterns());
+            }
+        }
     }
 
     /**
