@@ -1,18 +1,28 @@
 package com.hgws.sbp.configurations.swagger;
 
+import com.hgws.sbp.commons.annotation.AccessOperation;
 import io.swagger.annotations.ApiOperation;
+import org.aspectj.weaver.JoinPointSignature;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
+
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.oas.annotations.EnableOpenApi;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+
+import static springfox.documentation.schema.AlternateTypeRules.newRule;
 
 /**
  * @author zhouhonggang
@@ -42,7 +52,9 @@ public class SwaggerConfiguration {
                 .select()
                 .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
                 .paths(PathSelectors.any())
-                .build();
+                .build()
+                .securitySchemes(securitySchemes())
+                .securityContexts(securityContext());
     }
 
     /**
@@ -56,6 +68,49 @@ public class SwaggerConfiguration {
                 .contact(new Contact("\u5468\u5b8f\u521a", "http://127.0.0.1:9527/swagger-ui/", "honggang_z@163.com"))
                 .version("1.2.0")
                 .build();
+    }
+
+    /**
+     * 使用jwt bearer token 授权方案
+     * 对应页面上的请求有小锁图标
+     * @return List<SecurityScheme>
+     */
+    private List<SecurityScheme> securitySchemes() {
+        return Collections.singletonList(HttpAuthenticationScheme.JWT_BEARER_BUILDER
+                .name("Authorization")
+                .scheme("bearer")
+                .build());
+    }
+
+    /**
+     * bearer 授权上下文
+     * @return List<SecurityContext>
+     */
+    private List<SecurityContext> securityContext() {
+        SecurityContext context = new SecurityContext(
+                defaultAuth(),
+                // 配置需要访问授权的请求，效果是对应页面上的请求有没有小锁图标
+                PathSelectors.regex("/auth.*").negate(),
+                // 配置需要访问授权的请求，效果是对应页面上的请求有没有小锁图标
+                each -> true,
+                // operationSelector优先级高于上面两个，配置需要访问授权的请求，效果是对应页面上的请求有没有小锁图标
+                // 将auth开头的请求和类、方法上有指定注解的请求在swagger页面上放行，不使用jwt bearer token 授权方案
+                operationContext -> !operationContext.requestMappingPattern().matches("/auth.*") &&
+                        !operationContext.findControllerAnnotation(AccessOperation.class).isPresent() &&
+                        !operationContext.findAnnotation(AccessOperation.class).isPresent()
+        );
+        return Collections.singletonList(context);
+    }
+
+    /**
+     * bearer 授权范围
+     * @return List<SecurityReference>
+     */
+    private List<SecurityReference> defaultAuth() {
+        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+        authorizationScopes[0] = authorizationScope;
+        return Collections.singletonList(new SecurityReference("Authorization", authorizationScopes));
     }
 
 }

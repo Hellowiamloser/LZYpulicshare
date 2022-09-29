@@ -31,3 +31,9 @@ security:
         expiration: 1800
         refresh: 86400
         remember: 604800
+springfox:
+    documentation:
+        swagger-ui:
+            enabled: false
+        open-api:
+            enabled: false
