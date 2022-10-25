@@ -40,7 +40,8 @@ public class Base {
      * 逻辑删除 0 1
      */
     @TableLogic
-    private Integer deleteFlag = 0;
+    @TableField(fill = FieldFill.INSERT)
+    private Integer deleteFlag;
     /**
      * 创建人
      */

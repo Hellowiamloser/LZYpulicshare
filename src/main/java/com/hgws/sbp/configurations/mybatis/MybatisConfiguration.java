@@ -6,12 +6,16 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.hgws.sbp.configurations.mybatis.interceptor.CustomAutoFillInterceptor;
 import org.apache.ibatis.session.ExecutorType;
 import org.mybatis.spring.annotation.MapperScan;
+import org.mybatis.spring.annotation.MapperScans;
 import org.springframework.aop.interceptor.PerformanceMonitorInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+
+import javax.annotation.Resource;
 
 /**
  * @author zhouhonggang
@@ -24,12 +28,17 @@ import org.springframework.context.annotation.Profile;
 @MapperScan(basePackages = "com.hgws.sbp.modules.*.*.dao")
 public class MybatisConfiguration {
 
+    @Resource
+    private CustomAutoFillInterceptor customAutoFillInterceptor;
+
     /**
      * 向MybatisPlus中注册插件
      */
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        // 注册自动插件
+        interceptor.addInnerInterceptor(customAutoFillInterceptor);
         // 注册分页插件
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         // 注册乐观锁插件
@@ -44,6 +53,7 @@ public class MybatisConfiguration {
      * ExecutorType.SIMPLE  简单
      * ExecutorType.BATCH   批量
      * ExecutorType.REUSE   复用
+     * ExecutorType.CACHING 缓存
      * @return SIMPLE
      */
     @Bean

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.hgws.sbp.commons.utils.UserUtils;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +14,7 @@ import java.time.LocalDateTime;
  * @datetime 2022-06-30 15:38
  * @description: 公共字段内容自动填充
  */
-@Component
+//@Component
 public class AutoFillMetaObjectHandler implements MetaObjectHandler {
 
     @Autowired
@@ -29,6 +28,7 @@ public class AutoFillMetaObjectHandler implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         Integer userId = userUtils.getUserId();
         this.fillStrategy(metaObject, "revision", 1);
+        this.fillStrategy(metaObject, "deleteFlag", 0);
         this.fillStrategy(metaObject, "createdBy", userId);
         this.fillStrategy(metaObject, "createdTime", LocalDateTime.now());
     }

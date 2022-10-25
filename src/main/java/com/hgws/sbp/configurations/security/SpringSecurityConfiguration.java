@@ -16,7 +16,6 @@ import com.hgws.sbp.modules.system.user.service.SystemUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -26,9 +25,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -43,14 +40,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import javax.annotation.Resource;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -92,7 +88,7 @@ public class SpringSecurityConfiguration {
     @Autowired
     private SpringSecurityProperties springSecurityProperties;
 
-    @Autowired
+    @Resource
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     /**
@@ -170,6 +166,8 @@ public class SpringSecurityConfiguration {
                 .and()
             // 配置客户端请求拦截规则
             .authorizeRequests()
+                // 允许匿名访问的注解
+                .antMatchers(getAnonymousUrls()).permitAll()
                 // 白名单放行
                 .antMatchers(springSecurityProperties.getWhiteList()).permitAll()
                 // 其他请求需经过认证后放行
@@ -342,36 +340,21 @@ public class SpringSecurityConfiguration {
      * 不走SpringSecurityFilterChain, 无法获取SpringSecurityContextHolder
      * @return WebSecurityCustomizer
      */
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer()
-    {
-        Map<HttpMethod, Set<String>> accessMethods = new HashMap<>(16);
-        return (web -> {
-            WebSecurity and = web.ignoring().and();
-            Map<RequestMappingInfo, HandlerMethod> handlerMethodMap = requestMappingHandlerMapping.getHandlerMethods();
-            handlerMethodMap.forEach((info, method) -> {
-               if(method.getBeanType().isAnnotationPresent(AccessOperation.class) || method.hasMethodAnnotation(AccessOperation.class))
-               {
-                   infoMethodMap(accessMethods, info);
-                   // 添加请求方式对应的地址放行
-                   accessMethods.forEach((k, v) -> and.ignoring().antMatchers(k, v.toArray(new String[0])));
-               }
-            });
-        });
-    }
-
-    private void infoMethodMap(Map<HttpMethod, Set<String>> accessMethods, RequestMappingInfo info) {
-        for (RequestMethod methods : info.getMethodsCondition().getMethods()) {
-            HttpMethod httpMethod = HttpMethod.resolve(methods.name());
-            if (null != httpMethod) {
-                Set<String> methodPatterns = accessMethods.get(httpMethod);
-                if (CollectionUtils.isEmpty(methodPatterns)) {
-                    methodPatterns = new HashSet<>();
-                    accessMethods.put(httpMethod, methodPatterns);
-                }
-                methodPatterns.addAll(info.getPatternsCondition().getPatterns());
+    private String[] getAnonymousUrls() {
+        // 获取所有的 RequestMapping
+        Map<RequestMappingInfo, HandlerMethod> handlerMethods = requestMappingHandlerMapping.getHandlerMethods();
+        Set<String> allAnonymousAccess = new HashSet<>();
+        // 循环 RequestMapping
+        for (Map.Entry<RequestMappingInfo, HandlerMethod> infoEntry : handlerMethods.entrySet()) {
+            HandlerMethod value = infoEntry.getValue();
+            // 获取方法上 AnonymousAccess 类型的注解
+            AccessOperation methodAnnotation = value.getMethodAnnotation(AccessOperation.class);
+            // 如果方法上标注了 AccessOperation 注解，就获取该方法的访问全路径
+            if (methodAnnotation != null) {
+                allAnonymousAccess.addAll(infoEntry.getKey().getPatternsCondition().getPatterns());
             }
         }
+        return allAnonymousAccess.toArray(new String[0]);
     }
 
     /**

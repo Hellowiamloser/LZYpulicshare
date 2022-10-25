@@ -61,11 +61,14 @@ public class DynamicTTLCacheWriter implements RedisCacheWriter {
                 String nullValue = new String(value);
                 if(nullValue.contains("org.springframework.cache.support.NullValue"))
                 {
+                    //查询数据库没有的记录, 依然写入缓存时长默认五分钟
                     connection.set(key, value, Expiration.from(Duration.ofMinutes(5)), RedisStringCommands.SetOption.upsert());
                 }
                 else
                 {
+                    //随机产生一个0-10分钟之间的时间
                     int randomMinutes = random.nextInt(11);
+                    //每次向缓存写入时间为随机 10-20 分钟之间
                     connection.set(key, value, Expiration.from(ttl.toMinutes() + randomMinutes, TimeUnit.MINUTES), RedisStringCommands.SetOption.upsert());
                 }
             } else {
