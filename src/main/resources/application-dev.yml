@@ -25,6 +25,8 @@ spring:
     redis:
         host: 127.0.0.1
         port: 6379
+    banner:
+        location: classpath:/templates/banner.txt
 mybatis-plus:
     #配置信息
     configuration:

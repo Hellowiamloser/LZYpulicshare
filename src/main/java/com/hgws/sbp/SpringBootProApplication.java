@@ -16,7 +16,13 @@ package com.hgws.sbp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
 
 /**
  * @author zhouhonggang
@@ -30,7 +36,28 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class SpringBootProApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringBootProApplication.class, args);
+        console(SpringApplication.run(SpringBootProApplication.class, args));
+    }
+
+    public static void console(ConfigurableApplicationContext application) {
+        Environment env = application.getEnvironment();
+        String ip = null;
+        try {
+            ip = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        String port = env.getProperty("server.port");
+
+        String[] profiles = env.getActiveProfiles();
+        if(Arrays.stream(profiles).anyMatch(profile -> profile.equals("dev")))
+        {
+            System.out.println("================================================= [spring-boot-pro]应用启动完成 =================================================");
+            System.out.println("================================================= 接口地址: http://" + ip + ":" + port );
+            System.out.println("================================================= 监控地址: http://" + ip + ":" + port + "/druid/");
+            System.out.println("================================================= 文档地址: http://" + ip + ":" + port + "/swagger-ui/");
+            System.out.println("================================================= [spring-boot-pro]应用启动完成 =================================================");
+        }
     }
 
 }

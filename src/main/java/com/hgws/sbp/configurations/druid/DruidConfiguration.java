@@ -1,13 +1,15 @@
 package com.hgws.sbp.configurations.druid;
 
+import com.alibaba.druid.spring.boot.autoconfigure.properties.DruidStatProperties;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
+import com.alibaba.druid.util.Utils;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Collections;
+import javax.servlet.Filter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,16 +59,31 @@ public class DruidConfiguration {
      * @return FilterRegistrationBean
      */
     @Bean
-    public FilterRegistrationBean<WebStatFilter> webStatFilter(){
-        FilterRegistrationBean<WebStatFilter> bean = new FilterRegistrationBean<>();
-        bean.setFilter(new WebStatFilter());
-        //exclusions：设置哪些请求进行过滤排除掉，从而不进行统计
-        Map<String,String> initParams = new HashMap<>();
-        initParams.put("exclusions","*.js,*.css,/druid/*");
-        bean.setInitParameters(initParams);
-        //"/*" 表示过滤所有请求
-        bean.setUrlPatterns(Collections.singletonList("/*"));
-        return bean;
+    public FilterRegistrationBean<WebStatFilter> webStatFilter(DruidStatProperties properties){
+        final String filePath = "support/http/resources/js/common.js";
+
+        // 获取web监控页面的参数
+        DruidStatProperties.StatViewServlet config = properties.getStatViewServlet();
+        // 提取common.js的配置路径
+        String pattern = config.getUrlPattern() != null ? config.getUrlPattern() : "/druid/*";
+        String jsPattern = pattern.replaceAll("\\*", "js/common.js");
+
+        //创建filter进行过滤
+        Filter filter = (req, rep, chain) -> {
+            chain.doFilter(req, rep);
+            // 重置缓冲区，响应头不会被重置
+            rep.resetBuffer();
+            // 获取common.js
+            String text = Utils.readFromResource(filePath);
+            // 正则替换, 除去底部的广告信息
+            text = text.replaceAll("<a.*?banner\"></a><br/>", "");
+            text = text.replaceAll("powered.*?shrek.wang</a>", "");
+            rep.getWriter().write(text);
+        };
+        FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+        registrationBean.setFilter(filter);
+        registrationBean.addUrlPatterns(jsPattern);
+        return registrationBean;
     }
 
 }
