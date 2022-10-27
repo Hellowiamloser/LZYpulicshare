@@ -70,13 +70,16 @@ public class ResponseResultAdvice implements ResponseBodyAdvice<Object> {
         if("dev".equals(profiles)) {
             String result = "";
             try {
-                result = objectMapper.writeValueAsString(data);
+                //普通输出
+                //result = objectMapper.writeValueAsString(data);
+                //美化输出
+                result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
-            logger.info("=========================================");
-            logger.info("执行成功, 返回结果为:" + result);
-            logger.info("=========================================");
+            logger.info("===================开始输出本次执行结果======================");
+            logger.info("\n" + result);
+            logger.info("===================结束输出本次执行结果======================");
         }
         if(data instanceof String)
             return data;

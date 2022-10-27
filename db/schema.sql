@@ -146,3 +146,54 @@ INSERT INTO `system_role_authority` VALUES (1, 4);
 INSERT INTO `system_role_authority` VALUES (1, 5);
 INSERT INTO `system_role_authority` VALUES (2, 3);
 INSERT INTO `system_role_authority` VALUES (2, 5);
+
+
+-- ----------------------------
+-- Table structure for system_data_dictionary
+-- ----------------------------
+DROP TABLE IF EXISTS `system_data_dictionary`;
+CREATE TABLE `system_data_dictionary`  (
+   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+   `name` varchar(60) NOT NULL COMMENT '字典名称',
+   `code` varchar(60) NULL DEFAULT NULL COMMENT '字典编号',
+   `reason` varchar(90) NULL DEFAULT NULL COMMENT '字典备注',
+   `revision` int(11) NULL DEFAULT NULL COMMENT '乐观锁',
+   `delete_flag` int(11) NULL DEFAULT NULL COMMENT '删除状态',
+   `created_by` int(11) NULL DEFAULT NULL COMMENT '创建人',
+   `created_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+   `updated_by` int(11) NULL DEFAULT NULL COMMENT '更新人',
+   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+   PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 3 COMMENT = '系统管理-数据字典' ROW_FORMAT = Dynamic;
+-- ----------------------------
+-- Records of system_data_dictionary
+-- ----------------------------
+INSERT INTO `system_data_dictionary` VALUES (1, '性别', 'gender', '用户性别', 1, 0, 1, '2022-10-27 11:10:44', NULL, NULL);
+INSERT INTO `system_data_dictionary` VALUES (2, '状态', 'state', '启禁用状态', 1, 0, 1, '2021-11-02 15:08:25', NULL, NULL);
+-- ----------------------------
+-- Table structure for system_data_dictionary_detail
+-- ----------------------------
+DROP TABLE IF EXISTS `system_data_dictionary_detail`;
+CREATE TABLE `system_data_dictionary_detail`  (
+    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `name` varchar(60) NULL DEFAULT NULL COMMENT '字典名称',
+    `code` varchar(60) NULL DEFAULT NULL COMMENT '字典数值',
+    `sorted` int(11) NULL DEFAULT NULL COMMENT '字典排序',
+    `reason` varchar(90) NULL DEFAULT NULL COMMENT '字典备注',
+    `dictionary_id` int(32) NULL DEFAULT NULL COMMENT '字典外键',
+    `revision` int(11) NULL DEFAULT NULL COMMENT '乐观锁',
+    `delete_flag` int(11) NULL DEFAULT NULL COMMENT '删除状态',
+    `created_by` int(11) NULL DEFAULT NULL COMMENT '创建人',
+    `created_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+    `updated_by` int(11) NULL DEFAULT NULL COMMENT '更新人',
+    `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 6 COMMENT = '系统管理-数据字典-详情信息' ROW_FORMAT = Dynamic;
+-- ----------------------------
+-- Records of system_data_dictionary_detail
+-- ----------------------------
+INSERT INTO `system_data_dictionary_detail` VALUES (1, '男', '1', 1, '性别男', 1, 1, 0, 1, '2022-10-27 11:12:51', NULL, NULL);
+INSERT INTO `system_data_dictionary_detail` VALUES (2, '女', '2', 2, '性别女', 1, 1, 0, 1, '2022-10-27 11:13:14', NULL, NULL);
+INSERT INTO `system_data_dictionary_detail` VALUES (3, '保密', '3', 3, '性别保密', 1, 1, 0, 1, '2022-10-27 11:13:25', NULL, NULL);
+INSERT INTO `system_data_dictionary_detail` VALUES (4, '启用', '0', 1, '可以访问系统', 2, 1, 0, 1, '2021-11-02 17:15:12', NULL, NULL);
+INSERT INTO `system_data_dictionary_detail` VALUES (5, '禁用', '1', 2, '禁止访问系统', 2, 1, 0, 1, '2021-11-02 17:15:32', NULL, NULL);

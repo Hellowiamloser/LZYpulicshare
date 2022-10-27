@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgws.sbp.modules.system.dictionary.dao.DictionaryDetailDao">
+
+    <select id="loadDetailByCode" resultType="Map">
+        select d2.name, d2.code from system_data_dictionary d1, system_data_dictionary_detail d2
+            where d1.id = d2.dictionary_id and d1.code = #{code} and d2.delete_flag = 0 order by d2.sorted
+    </select>
+
+</mapper>
