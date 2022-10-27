@@ -14,11 +14,11 @@
  */
 package com.hgws.sbp;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -31,7 +31,7 @@ import java.util.Arrays;
  * @datetime 2022-07-11 09:28
  * @description: 应用启动入口
  */
-@EnableScheduling
+@Slf4j
 @SpringBootApplication
 public class SpringBootProApplication {
 
@@ -52,11 +52,11 @@ public class SpringBootProApplication {
         String[] profiles = env.getActiveProfiles();
         if(Arrays.stream(profiles).anyMatch(profile -> profile.equals("dev")))
         {
-            System.out.println("================================================= [spring-boot-pro]应用启动完成 =================================================");
-            System.out.println("================================================= 接口地址: http://" + ip + ":" + port );
-            System.out.println("================================================= 监控地址: http://" + ip + ":" + port + "/druid/");
-            System.out.println("================================================= 文档地址: http://" + ip + ":" + port + "/swagger-ui/");
-            System.out.println("================================================= [spring-boot-pro]应用启动完成 =================================================");
+            log.info("\n" +
+                    "[spring-boot-pro]应用启动完成 \n" +
+                    "接口地址: http://" + ip + ":" + port + "\n" +
+                    "监控地址: http://" + ip + ":" + port + "/druid/\n" +
+                    "文档地址: http://" + ip + ":" + port + "/swagger-ui/");
         }
     }
 

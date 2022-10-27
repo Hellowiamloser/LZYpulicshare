@@ -8,4 +8,9 @@
             where d1.id = d2.dictionary_id and d1.code = #{code} and d2.delete_flag = 0 order by d2.sorted
     </select>
 
+    <select id="loadDetailNameByCode" resultType="String">
+        select sddd.name from system_data_dictionary sdd, system_data_dictionary_detail sddd
+            where sdd.id = sddd.dictionary_id and sdd.code = #{code} and sddd.code = #{value}
+    </select>
+
 </mapper>

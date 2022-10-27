@@ -15,4 +15,5 @@ import java.util.Map;
  */
 public interface DictionaryDetailDao extends BaseDao<DictionaryDetail> {
     List<Map<String, Object>> loadDetailByCode(String code);
+    String loadDetailNameByCode(String code, int value);
 }

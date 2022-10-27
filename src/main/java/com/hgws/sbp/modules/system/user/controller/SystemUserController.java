@@ -39,7 +39,7 @@ import java.util.Date;
  * @datetime 2022-06-30 16:44
  * @description: 系统·用户·接口
  */
-@Api(tags = "[系统·用户·接口]")
+@Api(tags = "[系统-用户]")
 @RestController
 @RequestMapping("system/user")
 public class SystemUserController extends BaseController {

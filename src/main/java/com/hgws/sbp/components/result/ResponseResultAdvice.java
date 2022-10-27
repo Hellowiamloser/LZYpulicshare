@@ -1,9 +1,14 @@
 package com.hgws.sbp.components.result;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hgws.sbp.commons.annotation.DictionaryOperation;
+import com.hgws.sbp.commons.base.entity.Base;
 import com.hgws.sbp.commons.base.result.Result;
 import com.hgws.sbp.commons.enumerate.ResultEnumerate;
+import com.hgws.sbp.commons.utils.PropertiesUtils;
+import com.hgws.sbp.modules.system.dictionary.service.DictionaryDetailService;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +21,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,8 +29,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * @author zhouhonggang
@@ -40,6 +46,8 @@ public class ResponseResultAdvice implements ResponseBodyAdvice<Object> {
     private String profiles;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private DictionaryDetailService dictionaryDetailService;
 
     private final static Logger logger = LoggerFactory.getLogger(ResponseResultAdvice.class);
 
@@ -77,15 +85,69 @@ public class ResponseResultAdvice implements ResponseBodyAdvice<Object> {
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
-            logger.info("===================开始输出本次执行结果======================");
-            logger.info("\n" + result);
-            logger.info("===================结束输出本次执行结果======================");
+            logger.info("\n" +
+                    "\u5f53\u524d\u5185\u5bb9\u4ec5\u5728\u5f00\u53d1\u73af\u5883\u8f93\u51fa: \u5f00\u59cb\u8f93\u51fa\u672c\u6b21\u6267\u884c\u7ed3\u679c\n"
+                    + result + "\n" +
+                    "\u5f53\u524d\u5185\u5bb9\u4ec5\u5728\u5f00\u53d1\u73af\u5883\u8f93\u51fa: \u7ed3\u675f\u8f93\u51fa\u672c\u6b21\u6267\u884c\u7ed3\u679c");
+        }
+
+        if (!ObjectUtils.isEmpty(data)) {
+            if (data instanceof Base) {
+                data = dynamicProperties(data);
+            } else if (data instanceof Page) {
+                if (data instanceof Base) {
+                    Page<Object> page = (Page) data;
+                    List<Object> records = page.getRecords();
+                    if (!ObjectUtils.isEmpty(records)) {
+                        for (int i = 0; i < records.size(); i++) {
+                            Object object = records.get(i);
+                            records.set(i, dynamicProperties(object));
+                        }
+                    }
+                }
+            }
         }
         if(data instanceof String)
             return data;
         else if(data instanceof Result)
             return data;
         return Result.success(data);
+    }
+
+    /**
+     * CGLIB动态属性增强
+     * @param data 带增强实例
+     * @return 增强后实例
+     */
+    public Object dynamicProperties(Object data)
+    {
+        Field[] fields = data.getClass().getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            if(field.isAnnotationPresent(DictionaryOperation.class))
+            {
+                DictionaryOperation dictionaryOperation = field.getAnnotation(DictionaryOperation.class);
+                //获取数据字典code
+                String code = dictionaryOperation.code();
+                //获取数据库真实值
+                Integer value = 1;
+                try {
+                    field.setAccessible(true);
+                    value = (Integer) field.get(data);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                //获取数据字典表现值
+                String showValue = dictionaryDetailService.loadDetailNameByCode(code, value);
+                //封装动态数据字典值
+                Map<String, Object> addProperties = new HashMap() {{
+                    put(field.getName()+"Text", showValue);
+                }};
+                //返回封装后动态数据
+                return PropertiesUtils.getTarget(data, addProperties);
+            }
+        }
+        return data;
     }
 
     /**

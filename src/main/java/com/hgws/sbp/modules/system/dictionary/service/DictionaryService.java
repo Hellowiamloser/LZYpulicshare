@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hgws.sbp.commons.base.service.BaseService;
 import com.hgws.sbp.modules.system.dictionary.dao.DictionaryDao;
 import com.hgws.sbp.modules.system.dictionary.entity.Dictionary;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -17,6 +20,7 @@ import org.springframework.util.StringUtils;
  * @description: 系统管理-数据字典逻辑层
  */
 @Service
+@CacheConfig(cacheNames = "system:dictionary")
 public class DictionaryService extends BaseService<DictionaryDao, Dictionary> {
 
     /**
@@ -24,6 +28,7 @@ public class DictionaryService extends BaseService<DictionaryDao, Dictionary> {
      * @param entity 字典信息
      * @return 分页对象
      */
+    @Cacheable(key = "'page:no:'+#entity.pageNo+':size:'+#entity.pageSize")
     public Page<Dictionary> page(Dictionary entity)
     {
         QueryWrapper<Dictionary> wrapper = new QueryWrapper<>();
@@ -44,6 +49,7 @@ public class DictionaryService extends BaseService<DictionaryDao, Dictionary> {
      * @return 条数
      */
     @Transactional
+    @CacheEvict(allEntries = true)
     public int save(Dictionary entity)
     {
         return dao.insert(entity);
@@ -55,6 +61,7 @@ public class DictionaryService extends BaseService<DictionaryDao, Dictionary> {
      * @return 条数
      */
     @Transactional
+    @CacheEvict(allEntries = true)
     public int delete(int id)
     {
         return dao.deleteById(id);

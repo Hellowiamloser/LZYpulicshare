@@ -56,6 +56,7 @@
         <thumbnailator.version>0.4.17</thumbnailator.version>
         <freemarker.version>2.3.31</freemarker.version>
         <mybatis.generator.version>3.5.2</mybatis.generator.version>
+        <commons.beanutils.version>1.9.4</commons.beanutils.version>
     </properties>
 
     <dependencies>
@@ -153,6 +154,12 @@
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
             <version>${freemarker.version}</version>
+        </dependency>
+        <!-- commons bean utils -->
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>${commons.beanutils.version}</version>
         </dependency>
         <!-- spring boot 热部署 -->
         <dependency>

@@ -15,6 +15,7 @@
 package com.hgws.sbp.modules.system.user.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.hgws.sbp.commons.annotation.DictionaryOperation;
 import com.hgws.sbp.commons.base.entity.Base;
 import com.hgws.sbp.commons.validator.password.Password;
 import io.swagger.annotations.ApiModel;
@@ -52,6 +53,7 @@ public class SystemUser extends Base {
     @NotNull(message = "性别不允许为空")
     @Range(min = 1, max = 2, message = "请选择正确性别")
     @ApiModelProperty(name = "gender", value = "用户性别", required = true, dataType = "String")
+    @DictionaryOperation(code = "gender")
     private Integer gender;
 
     @NotBlank(message = "昵称不允许为空")

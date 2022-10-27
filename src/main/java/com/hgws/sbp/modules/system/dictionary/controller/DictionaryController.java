@@ -27,7 +27,7 @@ import java.util.Map;
  * @description: 系统管理-数据字典表现层
  */
 @RestController
-@Api(tags = "[数据字典接口]")
+@Api(tags = "[系统-数据字典]")
 @RequestMapping("system/dictionary")
 public class DictionaryController {
 
