@@ -7,7 +7,7 @@ import com.hgws.sbp.commons.base.dao.BaseDao;
  * @version 1.0.0
  * @project spring-boot-pro
  * @datetime 2022-09-13
- * @description: do something
+ * @description: 一键生成
  */
 public interface GeneratorDao extends BaseDao {
 }

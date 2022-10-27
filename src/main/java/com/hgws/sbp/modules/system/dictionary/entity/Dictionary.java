@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * @author zhouhonggang
  * @version 1.0.0
- * @project rapid-development-platform
+ * @project spring-boot-pro
  * @datetime 2022-01-18 11:30
  * @description: 系统管理-数据字典实体类
  */
