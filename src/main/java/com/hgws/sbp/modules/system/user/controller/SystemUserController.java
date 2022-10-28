@@ -64,7 +64,7 @@ public class SystemUserController extends BaseController {
     @PreAuthorize("hasAuthority('system:user:save')")
     public Integer save(@RequestBody @Validated SystemUser entity)
     {
-        return userService.insert(entity);
+        return userService.save(entity);
     }
 
     @PutMapping
@@ -86,7 +86,7 @@ public class SystemUserController extends BaseController {
     @PreAuthorize("hasAuthority('system:user:update')")
     public Integer update(@RequestBody @Validated SystemUser entity)
     {
-        return userService.update(entity);
+        return userService.updateById(entity);
     }
 
     @DeleteMapping("{id}")

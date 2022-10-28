@@ -23,12 +23,13 @@ public enum ResultEnumerate {
 
     /* 接口相关：2001-2999 */
     INTERFACE_CALL_SUCCESS(2001, "接口调用成功"),
-    INTERFACE_INNER_ERROR(2002, "内部接口调用异常"),
-    INTERFACE_OUTER_ERROR(2003, "外部接口调用异常"),
-    INTERFACE_FORBID_VISIT(2004, "该接口禁止访问"),
-    INTERFACE_REQUEST_TIMEOUT(2005, "接口请求超时"),
-    INTERFACE_EXCEED_LOAD(2006, "接口负载过高"),
-    INTERFACE_NOT_FOUND(2007, "接口不存在"),
+    INTERFACE_CALL_ERROR(2002, "接口调用异常"),
+    INTERFACE_INNER_ERROR(2003, "内部接口调用异常"),
+    INTERFACE_OUTER_ERROR(2004, "外部接口调用异常"),
+    INTERFACE_FORBID_VISIT(2005, "该接口禁止访问"),
+    INTERFACE_REQUEST_TIMEOUT(2006, "接口请求超时"),
+    INTERFACE_EXCEED_LOAD(2007, "接口负载过高"),
+    INTERFACE_NOT_FOUND(2008, "接口不存在"),
 
     /* 参数错误：3001-3999 */
     PARAM_IS_BLANK(3001, "参数为空"),

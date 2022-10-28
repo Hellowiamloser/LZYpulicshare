@@ -52,7 +52,7 @@ public class SystemUserService extends BaseService<SystemUserDao, SystemUser> {
      */
     @Transactional
     @CacheEvict(allEntries = true)
-    public int insert(SystemUser entity)
+    public int save(SystemUser entity)
     {
         entity.setPass(passwordEncoder.encode(entity.getPass()));
         return dao.insert(entity);
@@ -65,7 +65,7 @@ public class SystemUserService extends BaseService<SystemUserDao, SystemUser> {
      */
     @Transactional
     @CacheEvict(allEntries = true)
-    public int update(SystemUser entity)
+    public int updateById(SystemUser entity)
     {
         return dao.updateById(entity);
     }

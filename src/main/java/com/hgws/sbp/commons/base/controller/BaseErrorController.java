@@ -44,15 +44,18 @@ public class BaseErrorController extends BasicErrorController {
         // 获取错误信息
         Map<String, Object> originalMsgMap = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
         // 封装错误信息
-        Map<String, Object> errors = new HashMap<>();
-        errors.put("path", originalMsgMap.get("path"));
-        errors.put("error", originalMsgMap.get("error"));
-        errors.put("message", originalMsgMap.get("message"));
-
-        Map<String, Object> result = new LinkedHashMap<>();
-        result.put("code", ResultEnumerate.INTERFACE_NOT_FOUND.getCode());
-        result.put("message", ResultEnumerate.INTERFACE_NOT_FOUND.getMessage());
-        result.put("data", errors);
+        Map<String, Object> result = new LinkedHashMap(){{
+            // 封装状态码
+            put("code", ResultEnumerate.INTERFACE_NOT_FOUND.getCode());
+            // 封装错误消息
+            put("message", ResultEnumerate.INTERFACE_NOT_FOUND.getMessage());
+            // 封装错误信息
+            put("data", new HashMap<>(){{
+                put("path", originalMsgMap.get("path"));
+                put("error", originalMsgMap.get("error"));
+                put("message", ResultEnumerate.INTERFACE_NOT_FOUND.getMessage());
+            }});
+        }};
         // 返回错误信息
         return new ResponseEntity<>(result, getStatus(request));
     }
