@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgws.sbp.modules.light.strategy.dao.StrategyDao">
+    <!--策略添加-->
+    <insert id="insert" parameterType="com.hgws.sbp.modules.light.strategy.entity.Strategy">
+    insert into smart_lamps.strategy(
+    id, strategy_id, strategy_name, strategy_group, strategy_area, strategy_scheduled, up_state,
+    revision, delete_flag, created_by, created_time, updated_by, updated_time
+    )
+    VALUES (
+    #{id},#{strategyId},#{strategyName},#{strategyGroup.id},#{strategyArea.id},#{strategyId},#{upState},
+    #{ revision},#{ deleteFlag},#{ createdBy},#{ createdTime},#{ updatedBy},#{ updatedTime})
+    </insert>
+    <!--计划表添加-->
+    <insert id="insertScheduled" parameterType="com.hgws.sbp.modules.light.strategy.entity.Scheduled">
+        insert into smart_lamps.scheduled(strategy_code, open_time, close_time, light_cycle, open_time_cron, close_time_cron, open_cycle_cron, close_cycle_cron)
+        values(#{strategyCode},#{ openTime},#{ closeTime},#{ lightCycle},#{ openTimeCron},#{ closeTimeCron},#{ openCycleCron},#{ closeCycleCron})
+    </insert>
+    <!--计划表查询-->
+    <select id="queryScheduled" resultType="com.hgws.sbp.modules.light.strategy.entity.Scheduled">
+        select strategy_code, open_time, close_time, light_cycle, open_time_cron, close_time_cron, open_cycle_cron, close_cycle_cron from smart_lamps.scheduled
+        where strategy_code=#{strategyId}
+    </select>
+
+    <select id="queryPage" resultMap="strategyPage" parameterType="com.hgws.sbp.modules.light.strategy.entity.Strategy">
+        select s.id,s.strategy_id,s.strategy_name,s.up_state,s.strategy_group,s.strategy_area,
+               a.area_code,g.group_code,
+               sd.strategy_code, open_time, close_time, light_cycle, open_time_cron, close_time_cron, open_cycle_cron, close_cycle_cron
+        from smart_lamps.strategy s,smart_lamps.group_manager g ,smart_lamps.scheduled sd,smart_lamps.light_area a
+        where s.strategy_group=g.id and s.strategy_scheduled=sd.strategy_code and s.strategy_area=a.id
+    </select>
+    <resultMap id="strategyPage" type="com.hgws.sbp.modules.light.strategy.entity.Strategy" autoMapping="true">
+        <id column="id" property="id"/>
+        <association property="strategyGroup" autoMapping="true" javaType="com.hgws.sbp.modules.light.group.entity.Group"/>
+        <association property="strategyArea" autoMapping="true" javaType="com.hgws.sbp.modules.light.area.entity.LightArea"/>
+        <association property="strategyScheduled" autoMapping="true" javaType="com.hgws.sbp.modules.light.strategy.entity.Scheduled"/>
+    </resultMap>
+
+
+</mapper>

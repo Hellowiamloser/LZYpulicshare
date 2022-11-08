@@ -1,13 +1,13 @@
 server:
     port: 9527
-    path: D:\\images\\
+    path: D:\\serverfileupload\\
 spring:
     datasource:
         #数据库连接四要素
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://127.0.0.1:3306/javakc?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useAffectedRows=true
+        url: jdbc:mysql://127.0.0.1:3306/smart_lamps?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useAffectedRows=true
         username: root
-        password: 123456
+        password: '123456'
         #druid数据源配置
         type: com.alibaba.druid.pool.DruidDataSource
         #druid连接池属性
@@ -25,6 +25,11 @@ spring:
     redis:
         host: 127.0.0.1
         port: 6379
+#    redis:
+#        sentinel:
+#            master: mymaster
+#           哨兵模式，接入所有哨兵
+#            nodes: 127.0.0.1:16379,127.0.0.1:16380,127.0.0.1:16381
     banner:
         location: classpath:/templates/banner.txt
 mybatis-plus:

@@ -155,7 +155,7 @@ public class SpringSecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationConfiguration configuration) throws Exception {
         return http
-            // 前后端分离应用关闭csrf
+            // 前后端分离应用关闭csrf[类似于禁用cookie]
             .csrf().disable()
             // 前后端分离开启跨域访问
             .cors()

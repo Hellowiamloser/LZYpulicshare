@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgws.sbp.modules.light.detail.dao.LightDetailDao">
+
+
+    <select id="query" resultMap="LightDetailResultMap">
+        select d.id,d.light_code,d.light_name,d.light_type,d.light_brand,d.install_time,d.light_current,d.light_voltage,
+               d.online_state,d.switch_state,d.area_lng,d.area_lat,d.area_address,d.light_area_id,d.light_note,d.revision,
+               d.delete_flag,d.created_by,d.created_time,d.updated_by,d.updated_time,
+               a.area_name,g.group_name
+        from smart_lamps.light_area a, smart_lamps.light_details d,smart_lamps.group_manager g,smart_lamps.light_group_detail gd
+        where d.light_area_id=a.id and  d.id=gd.light_detail_id and g.id=gd.light_group_id
+    </select>
+    <resultMap id="LightDetailResultMap" type="detial" autoMapping="true">
+        <id property="id" column="id"/>
+        <!--复杂属性封装-->
+        <association property="lightArea" javaType="com.hgws.sbp.modules.light.area.entity.LightArea" autoMapping="true"/>
+        <!--复杂属性封装-->
+        <collection property="lightGroup" javaType="List" ofType="com.hgws.sbp.modules.light.group.entity.Group" autoMapping="true"/>
+    </resultMap>
+
+    <!--
+    useGeneratedKeys="true" keyProperty="id"
+    插入后将数据库自增的id赋值给实体类的id属性
+        System.out.println(entity.getId());
+        dao.insertDetail(entity);
+        System.out.println(entity.getId());
+    向insertDetail插入灯具详情的数据,并建立和区域表light_area的id的联系.
+    -->
+    <insert id="insertDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into smart_lamps.light_details
+        (light_code, light_name, light_type, light_brand, install_time,
+         light_current, light_voltage, online_state, switch_state, area_lng,
+         area_lat, area_address, light_area_id, light_note, revision,
+         delete_flag, created_by, created_time, updated_by, updated_time)
+        values (#{lightCode},#{ lightName},#{ lightType},#{ lightBrand},#{ installTime},
+                #{lightCurrent},#{ lightVoltage},#{ onlineState},#{ switchState},#{ areaLng},
+                #{areaLat},#{ areaAddress},#{ lightArea.id},#{ lightNote},#{ revision},
+                #{deleteFlag},#{ createdBy},#{ createdTime},#{ updatedBy},#{ updatedTime})
+    </insert>
+
+    <!--向分组中插入数据,一个灯具有多个分组,从分组列表中取出来插入-->
+    <insert id="insertGroupDetail">
+        insert into smart_lamps.light_group_detail(light_detail_id,light_group_id) VALUES
+            <foreach collection="list" item="group" separator=",">
+                (#{id},#{group.id})
+            </foreach>
+    </insert>
+
+</mapper>

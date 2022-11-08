@@ -121,6 +121,8 @@ public class ResponseResultAdvice implements ResponseBodyAdvice<Object> {
      */
     public Object dynamicProperties(Object data)
     {
+        //封装动态数据字典值
+        Map<String, Object> addProperties = new HashMap();
         Field[] fields = data.getClass().getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
@@ -140,14 +142,15 @@ public class ResponseResultAdvice implements ResponseBodyAdvice<Object> {
                 //获取数据字典表现值
                 String showValue = dictionaryDetailService.loadDetailNameByCode(code, value);
                 //封装动态数据字典值
-                Map<String, Object> addProperties = new HashMap() {{
-                    put(field.getName()+"Text", showValue);
-                }};
-                //返回封装后动态数据
-                return PropertiesUtils.getTarget(data, addProperties);
+                addProperties.put(field.getName()+"Text", showValue);
             }
         }
-        return data;
+        if(addProperties.size() > 0) {
+            //返回封装后动态数据
+            return PropertiesUtils.getTarget(data, addProperties);
+        } else {
+            return data;
+        }
     }
 
     /**

@@ -40,7 +40,7 @@ public class SpringBootProApplication {
     }
 
     public static void console(ConfigurableApplicationContext application) {
-        Environment env = application.getEnvironment();
+            Environment env = application.getEnvironment();
         String ip = null;
         try {
             ip = InetAddress.getLocalHost().getHostAddress();

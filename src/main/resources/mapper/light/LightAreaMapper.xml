@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hgws.sbp.modules.light.area.dao.LightAreaDao">
+
+    <select id="queryIdByPid" resultType="int">select area_level from smart_lamps.light_area where area_pid=#{id}</select>
+
+    <select id="queryTree" resultMap="lightAreaTreeResultMap">
+    select id,area_name,area_level from smart_lamps.light_area where delete_flag=0 and area_pid=#{pid}
+    </select>
+
+    <resultMap id="lightAreaTreeResultMap" type="Map">
+        <id property="id" column="id"/>
+        <result property="name" column="area_name" />
+        <result property="level" column="area_level" />
+        <collection property="children" column="id" select="queryTree" >
+            <id property="id" column="id"/>
+            <result property="name" column="area_name" />
+            <result property="level" column="area_level" />
+        </collection>
+    </resultMap>
+
+    <select id="queryNameByPid" resultType="int">
+        select count(1) from smart_lamps.light_area where area_pid =#{id} and area_name=#{name} and delete_flag=0
+    </select>
+
+</mapper>

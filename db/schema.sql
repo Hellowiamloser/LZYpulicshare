@@ -199,3 +199,55 @@ INSERT INTO `system_data_dictionary_detail` VALUES (2, '女', '2', 2, '性别女
 INSERT INTO `system_data_dictionary_detail` VALUES (3, '保密', '3', 3, '性别保密', 1, 1, 0, 1, '2021-10-27 11:13:25', NULL, NULL);
 INSERT INTO `system_data_dictionary_detail` VALUES (4, '启用', '0', 1, '可以访问系统', 2, 1, 0, 1, '2021-11-02 17:15:12', NULL, NULL);
 INSERT INTO `system_data_dictionary_detail` VALUES (5, '禁用', '1', 2, '禁止访问系统', 2, 1, 0, 1, '2021-11-02 17:15:32', NULL, NULL);
+-- --------------------------------
+-- CREATE TABLE light_area
+-- --------------------------------
+CREATE TABLE light_area(
+    id INT(11) NOT NULL AUTO_INCREMENT  COMMENT '主键' ,
+    area_code VARCHAR(20) NOT NULL   COMMENT '区域编号' ,
+    area_name VARCHAR(50) NOT NULL   COMMENT '区域名称' ,
+    area_level INT(11) NOT NULL   COMMENT '区域级别' ,
+    area_pid INT(11) NOT NULL   COMMENT '区域外键;数据字典' ,
+    area_note VARCHAR(255)    COMMENT '区域备注' ,
+    area_num INT(11)    COMMENT '分组编号' ,
+    super_area INT(11)    COMMENT '上级区域' ,
+    revision INT(11)    COMMENT '乐观锁' ,
+    delete_flag INT(11)    COMMENT '删除状态' ,
+    created_by INT(11)    COMMENT '创建人' ,
+    created_time DATETIME    COMMENT '创建时间' ,
+    updated_by INT(11)    COMMENT '更新人' ,
+    updated_time DATETIME    COMMENT '更新时间' ,
+    PRIMARY KEY (id)
+)  COMMENT = '灯具区域管理';
+-- --------------------------------
+-- CREATE TABLE strategy
+-- --------------------------------
+CREATE TABLE strategy(
+                         id INT(11) NOT NULL AUTO_INCREMENT  COMMENT '主键id' ,
+                         strategy_id VARCHAR(50)    COMMENT '策略编号' ,
+                         strategy_name VARCHAR(50)    COMMENT '策略名称' ,
+                         strategy_group INT(11)    COMMENT '分组编号(外键)' ,
+                         strategy_area INT(11)    COMMENT '区域编号(外键)' ,
+                         strategy_scheduled INT(11)    COMMENT '开灯计划(外键)' ,
+                         up_state INT(1)    COMMENT '启用状态' ,
+                         revision INT(11)    COMMENT '乐观锁' ,
+                         delete_flag INT(11)    COMMENT '删除状态' ,
+                         created_by INT(11)    COMMENT '创建人' ,
+                         created_time DATETIME    COMMENT '创建时间' ,
+                         updated_by INT(11)    COMMENT '更新人' ,
+                         updated_time DATETIME    COMMENT '更新时间' ,
+                         PRIMARY KEY (id)
+)  COMMENT = '灯具策略组控制';
+-- --------------------------------
+-- CREATE TABLE scheduled
+-- --------------------------------
+CREATE TABLE scheduled(
+                          strategy_code VARCHAR(255) NOT NULL   COMMENT '策略编号' ,
+                          open_time VARCHAR(255)    COMMENT '开灯时间' ,
+                          close_time VARCHAR(255)    COMMENT '关灯时间' ,
+                          light_cycle VARCHAR(255)    COMMENT '开关灯周期' ,
+                          open_time_cron VARCHAR(255)    COMMENT '开灯时间cron' ,
+                          close_time_cron VARCHAR(255)    COMMENT '关灯时间cron' ,
+                          open_cycle_cron VARCHAR(255)    COMMENT '开灯周期cron' ,
+                          close_cycle_cron VARCHAR(255)    COMMENT '关灯周期cron'
+)  COMMENT = '灯具开灯计划表';
